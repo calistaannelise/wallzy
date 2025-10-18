@@ -62,6 +62,25 @@ class ScrapedReward(Base):
     scraped_at = Column(String)
     processed = Column(Boolean, default=False)
 
+class Transaction(Base):
+    __tablename__ = "transactions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    card_id = Column(Integer, ForeignKey("cards.id"))
+    amount_cents = Column(Integer)  # Amount in cents
+    mcc_code = Column(String)  # Merchant Category Code
+    merchant_name = Column(String, nullable=True)
+    category = Column(String)  # Derived from MCC
+    rewards = Column(Integer)  # Cashback earned
+    multiplier = Column(Float)  # Cashback rate used
+    transaction_date = Column(String)  # ISO format timestamp
+    description = Column(Text, nullable=True)
+    
+    # Relationships
+    user = relationship("User", backref="transactions")
+    card = relationship("Card", backref="transactions")
+
 # Database setup
 DATABASE_URL = "sqlite:///./smartcard.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
