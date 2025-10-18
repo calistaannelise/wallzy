@@ -56,6 +56,27 @@ class RecommendResponse(BaseModel):
     category: str
     reason: str
 
+class TransactionCreate(BaseModel):
+    user_id: int
+    card_id: int
+    amount_cents: int
+    mcc_code: str
+    merchant_name: Optional[str] = None
+    description: Optional[str] = None
+
+class TransactionResponse(BaseModel):
+    id: int
+    user_id: int
+    card_id: int
+    card_name: str
+    amount_cents: int
+    mcc_code: str
+    category: str
+    cashback_cents: int
+    multiplier: float
+    transaction_date: str
+    merchant_name: Optional[str] = None
+
 # API Endpoints
 
 @app.get("/")
@@ -364,6 +385,208 @@ def get_user_summary(user_id: int, db: Session = Depends(database.get_db)):
         summary["cards"].append(card_info)
     
     return summary
+
+@app.post("/transactions", response_model=TransactionResponse)
+def create_transaction(transaction: TransactionCreate, db: Session = Depends(database.get_db)):
+    """
+    Record a transaction and calculate cashback earned
+    """
+    # Get the card
+    card = db.query(database.Card).filter(database.Card.id == transaction.card_id).first()
+    if not card:
+        raise HTTPException(status_code=404, detail="Card not found")
+    
+    # Get category from MCC
+    category = mcc_data.get_category_from_mcc(transaction.mcc_code)
+    
+    # Find the best reward rule for this card and category
+    rules = db.query(database.CardRule).filter(database.CardRule.card_id == transaction.card_id).all()
+    
+    best_multiplier = 0
+    best_cashback = 0
+    today = datetime.now().date()
+    
+    for rule in rules:
+        cat = db.query(database.Category).filter(database.Category.id == rule.category_id).first()
+        if not cat or (cat.name != category and cat.name != "other"):
+            continue
+        
+        # Check if rule is active
+        is_active = True
+        if rule.start_date:
+            start = datetime.fromisoformat(rule.start_date).date()
+            if today < start:
+                is_active = False
+        if rule.end_date:
+            end = datetime.fromisoformat(rule.end_date).date()
+            if today > end:
+                is_active = False
+        
+        if not is_active:
+            continue
+        
+        # Calculate cashback
+        multiplier = rule.multiplier
+        cashback = int((transaction.amount_cents * multiplier) / 100)
+        
+        if rule.cap_cents and cashback > rule.cap_cents:
+            cashback = rule.cap_cents
+        
+        if cashback > best_cashback:
+            best_multiplier = multiplier
+            best_cashback = cashback
+    
+    # Create transaction record
+    db_transaction = database.Transaction(
+        user_id=transaction.user_id,
+        card_id=transaction.card_id,
+        amount_cents=transaction.amount_cents,
+        mcc_code=transaction.mcc_code,
+        merchant_name=transaction.merchant_name,
+        category=category,
+        cashback_cents=best_cashback,
+        multiplier=best_multiplier,
+        transaction_date=datetime.now().isoformat(),
+        description=transaction.description
+    )
+    
+    db.add(db_transaction)
+    db.commit()
+    db.refresh(db_transaction)
+    
+    return TransactionResponse(
+        id=db_transaction.id,
+        user_id=db_transaction.user_id,
+        card_id=db_transaction.card_id,
+        card_name=card.card_name,
+        amount_cents=db_transaction.amount_cents,
+        mcc_code=db_transaction.mcc_code,
+        category=db_transaction.category,
+        cashback_cents=db_transaction.cashback_cents,
+        multiplier=db_transaction.multiplier,
+        transaction_date=db_transaction.transaction_date,
+        merchant_name=db_transaction.merchant_name
+    )
+
+@app.get("/transactions/{user_id}")
+def get_user_transactions(user_id: int, limit: int = 50, db: Session = Depends(database.get_db)):
+    """
+    Get transaction history for a user
+    """
+    transactions = db.query(database.Transaction).filter(
+        database.Transaction.user_id == user_id
+    ).order_by(database.Transaction.transaction_date.desc()).limit(limit).all()
+    
+    result = []
+    for txn in transactions:
+        card = db.query(database.Card).filter(database.Card.id == txn.card_id).first()
+        result.append({
+            "id": txn.id,
+            "card_name": card.card_name if card else "Unknown",
+            "card_issuer": card.issuer if card else "Unknown",
+            "amount_cents": txn.amount_cents,
+            "amount_dollars": txn.amount_cents / 100,
+            "mcc_code": txn.mcc_code,
+            "category": txn.category,
+            "merchant_name": txn.merchant_name,
+            "cashback_cents": txn.cashback_cents,
+            "cashback_dollars": txn.cashback_cents / 100,
+            "multiplier": txn.multiplier,
+            "transaction_date": txn.transaction_date,
+            "description": txn.description
+        })
+    
+    return result
+
+@app.get("/transactions/card/{card_id}")
+def get_card_transactions(card_id: int, limit: int = 50, db: Session = Depends(database.get_db)):
+    """
+    Get transaction history for a specific card
+    """
+    transactions = db.query(database.Transaction).filter(
+        database.Transaction.card_id == card_id
+    ).order_by(database.Transaction.transaction_date.desc()).limit(limit).all()
+    
+    result = []
+    for txn in transactions:
+        result.append({
+            "id": txn.id,
+            "amount_cents": txn.amount_cents,
+            "amount_dollars": txn.amount_cents / 100,
+            "mcc_code": txn.mcc_code,
+            "category": txn.category,
+            "merchant_name": txn.merchant_name,
+            "cashback_cents": txn.cashback_cents,
+            "cashback_dollars": txn.cashback_cents / 100,
+            "multiplier": txn.multiplier,
+            "transaction_date": txn.transaction_date,
+            "description": txn.description
+        })
+    
+    return result
+
+@app.get("/analytics/{user_id}")
+def get_user_analytics(user_id: int, db: Session = Depends(database.get_db)):
+    """
+    Get analytics for a user's spending and cashback
+    """
+    transactions = db.query(database.Transaction).filter(
+        database.Transaction.user_id == user_id
+    ).all()
+    
+    if not transactions:
+        return {
+            "total_transactions": 0,
+            "total_spent_cents": 0,
+            "total_cashback_cents": 0,
+            "average_cashback_rate": 0,
+            "by_category": {},
+            "by_card": {}
+        }
+    
+    total_spent = sum(t.amount_cents for t in transactions)
+    total_cashback = sum(t.cashback_cents for t in transactions)
+    avg_rate = (total_cashback / total_spent * 100) if total_spent > 0 else 0
+    
+    # By category
+    by_category = {}
+    for txn in transactions:
+        if txn.category not in by_category:
+            by_category[txn.category] = {
+                "count": 0,
+                "total_spent_cents": 0,
+                "total_cashback_cents": 0
+            }
+        by_category[txn.category]["count"] += 1
+        by_category[txn.category]["total_spent_cents"] += txn.amount_cents
+        by_category[txn.category]["total_cashback_cents"] += txn.cashback_cents
+    
+    # By card
+    by_card = {}
+    for txn in transactions:
+        card = db.query(database.Card).filter(database.Card.id == txn.card_id).first()
+        card_key = f"{card.card_name}" if card else "Unknown"
+        
+        if card_key not in by_card:
+            by_card[card_key] = {
+                "count": 0,
+                "total_spent_cents": 0,
+                "total_cashback_cents": 0
+            }
+        by_card[card_key]["count"] += 1
+        by_card[card_key]["total_spent_cents"] += txn.amount_cents
+        by_card[card_key]["total_cashback_cents"] += txn.cashback_cents
+    
+    return {
+        "total_transactions": len(transactions),
+        "total_spent_cents": total_spent,
+        "total_spent_dollars": total_spent / 100,
+        "total_cashback_cents": total_cashback,
+        "total_cashback_dollars": total_cashback / 100,
+        "average_cashback_rate": round(avg_rate, 2),
+        "by_category": by_category,
+        "by_card": by_card
+    }
 
 if __name__ == "__main__":
     import uvicorn
