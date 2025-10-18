@@ -11,12 +11,12 @@ An MVP implementation of the SmartCard system that automatically recommends the 
 ✅ **RESTful API** - FastAPI backend with full documentation
 
 ## Tech Stack
-
 - **Backend**: FastAPI (Python)
 - **Database**: SQLite
 - **Frontend**: React
 - **Web Scraping**: BeautifulSoup4, Requests
 - **Scheduling**: APScheduler (for automated updates)
+- **Firmware**: FreeRTOS ESP32, RFID, BLE
 
 ## Quick Start
 
@@ -100,10 +100,10 @@ The seed script creates a demo user with 4 credit cards:
 
 | Card | Best Categories | Cashback Rate |
 |------|----------------|---------------|
-| **Amex Blue Cash Preferred** | Groceries, Streaming | 6% |
-| **Citi Custom Cash** | Gas, Dining, Groceries | 5% |
-| **BofA Customized Cash** | Online Shopping | 3% |
-| **Chase Freedom Unlimited** | Dining, Drugstores | 3% |
+| **Amex Blue Cash Preferred** | Groceries | 6% |
+| **BoFA Customized Cash Rewards** | Dining | 3% |
+| **Amex Blue Cash Everyday** | Online Shopping | 3% |
+| **Delta Skymiles Blue American Express** | Travel | 2% |
 
 ## API Endpoints
 
