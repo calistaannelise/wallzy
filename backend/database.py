@@ -21,6 +21,9 @@ class Card(Base):
     issuer = Column(String)
     card_name = Column(String)
     last_four = Column(String)
+    expiry_date = Column(String)
+    cvv = Column(String)
+    
     user = relationship("User", back_populates="cards")
     rules = relationship("CardRule", back_populates="card")
 
