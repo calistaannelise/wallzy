@@ -81,7 +81,7 @@ const SignUpScreen = ({ navigateTo }) => {
       // For Android emulator → 10.0.2.2
       // For iOS simulator → 127.0.0.1
       // For physical device → your computer's LAN IP (e.g. 192.168.x.x)
-      const API_URL = "http://localhost:8000/users";
+      const API_URL = "http://10.0.2.2:8000/users";
 
       const response = await fetch(API_URL, {
         method: "POST",
