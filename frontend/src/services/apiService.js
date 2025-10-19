@@ -71,6 +71,12 @@ class ApiService {
     return this.request(API_ENDPOINTS.GET_USER_CARDS(userId));
   }
 
+  async deleteCard(cardId) {
+    return this.request(`/cards/${cardId}`, {
+      method: 'DELETE',
+    });
+  }
+
   // ============ Card Rule APIs ============
 
   async addCardRule(cardId, ruleData) {
