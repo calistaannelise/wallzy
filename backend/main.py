@@ -252,14 +252,48 @@ def recommend_card(request: RecommendRequest, db: Session = Depends(database.get
     """
     Recommend the best card for a transaction based on MCC code
     """
+
+    # Get json data
+    data = read_json()
+
     # Get category from MCC
-    category = mcc_data.get_category_from_mcc(request.mcc_code)
+    # category = mcc_data.get_category_from_mcc(request.mcc_code)
+    category = mcc_data.get_category_from_mcc(data["mcc"])
+    uid = data["uid"]
     
     # Get user's cards
     cards = db.query(database.Card).filter(database.Card.user_id == request.user_id).all()
     if not cards:
         raise HTTPException(status_code=404, detail="No cards found for user")
     
+    if (uid == "C10AAEA4"):
+        userid = 1
+        card_ids = [1, 2, 3]
+        random_card_id = random.choice(card_ids)
+        random_card = db.query(database.Card).filter(database.Card.id == random_card_id).first()
+
+        rules = db.query(database.CardRule).filter(database.CardRule.random_card_id).all()
+
+        multiplier = 1.0
+        cashback = int((request.amount_cents) / 100)
+
+        for rule in rules:
+            cat = db.query(database.Category).filter(database.Category.id == rule.category_id).first()
+            if cat and cat.name == category:
+                multiplier = rule.multiplier
+                cashback = int((request.amount_cents * multiplier) / 100)
+                break
+
+        return RecommendResponse(
+            recommended_card_id=random_card.id,
+            card_name=random_card.card_name,
+            issuer=random_card.issuer,
+            multiplier=multiplier,
+            cashback_cents=cashback,
+            category=category,
+            reason="Random card"
+    )
+
     best_card = None
     best_multiplier = 0
     best_cashback = 0
@@ -283,28 +317,28 @@ def recommend_card(request: RecommendRequest, db: Session = Depends(database.get
             if cat.name != category and cat.name != "other":
                 continue
             
-            # Check if rule is currently active
-            is_active = True
-            if rule.start_date:
-                start = datetime.fromisoformat(rule.start_date).date()
-                if today < start:
-                    is_active = False
+            # # Check if rule is currently active
+            # is_active = True
+            # if rule.start_date:
+            #     start = datetime.fromisoformat(rule.start_date).date()
+            #     if today < start:
+            #         is_active = False
             
-            if rule.end_date:
-                end = datetime.fromisoformat(rule.end_date).date()
-                if today > end:
-                    is_active = False
+            # if rule.end_date:
+            #     end = datetime.fromisoformat(rule.end_date).date()
+            #     if today > end:
+            #         is_active = False
             
-            if not is_active:
-                continue
+            # if not is_active:
+            #     continue
             
             # Calculate cashback
             multiplier = rule.multiplier
             cashback = int((request.amount_cents * multiplier) / 100)
             
-            # Check spending cap
-            if rule.cap_cents and cashback > rule.cap_cents:
-                cashback = rule.cap_cents
+            # # Check spending cap
+            # if rule.cap_cents and cashback > rule.cap_cents:
+            #     cashback = rule.cap_cents
             
             # Update best card if this is better
             if cashback > best_cashback or (cashback == best_cashback and multiplier > best_multiplier):
@@ -645,3 +679,7 @@ def get_user_analytics(user_id: int, db: Session = Depends(database.get_db)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+def read_json():
+    with open("hello.json", "r") as f:
+        return json.load(f)

@@ -82,6 +82,9 @@ const SignUpScreen = ({ navigateTo }) => {
       // For physical device → your computer's LAN IP (e.g. 192.168.x.x)
       const API_URL = "http://10.0.2.2:8000/users";
   
+      console.log("Sending signup request to:", API_URL);
+      console.log("Payload:", payload);
+  
       const response = await fetch(API_URL, {
         method: "POST",
         headers: {
@@ -90,7 +93,22 @@ const SignUpScreen = ({ navigateTo }) => {
         body: JSON.stringify(payload),
       });
   
-      const data = await response.json();
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+  
+      // Get response text first to handle non-JSON responses
+      const responseText = await response.text();
+      console.log("Response text:", responseText);
+  
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON parse error:", parseError);
+        console.error("Response was:", responseText);
+        Alert.alert('Error', 'Server returned an invalid response. Please ensure the backend is running correctly.');
+        return;
+      }
   
       if (response.ok) {
         // Store user data and auto-login
@@ -108,7 +126,7 @@ const SignUpScreen = ({ navigateTo }) => {
       }
     } catch (error) {
       console.error("Signup error:", error);
-      Alert.alert('Error', 'Network error. Please check your connection.');
+      Alert.alert('Error', `Network error: ${error.message}. Please check your connection and ensure the backend is running.`);
     } finally {
       setLoading(false);
     }
