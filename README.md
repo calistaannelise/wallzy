@@ -1,150 +1,174 @@
-# 🧠 SmartCard MVP - Autonomous Credit Card Optimizer
+# 💳 Wallzy - Smart Credit Card Optimizer
 
-An MVP implementation of the SmartCard system that automatically recommends the best credit card for each purchase based on merchant category codes (MCC) and dynamic reward rules.
+An intelligent credit card recommendation system that automatically suggests the best card for each purchase based on merchant categories and reward multipliers. Built with NFC/RFID tap functionality for seamless real-world usage.
 
-## Features
+## 📋 Table of Contents
 
-✅ **Card Recommendation Engine** - Get the best card for any purchase based on MCC codes
-✅ **Dynamic Reward Rules** - Support for time-based rewards, spending caps, and intro bonuses
-✅ **Web Scraper** - Automatically scrape Bank of America credit card rewards
-✅ **Mobile App** - React Native Android app for seamless user experience
-✅ **RESTful API** - FastAPI backend with full documentation
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Usage](#-usage)
+- [API Endpoints](#-api-endpoints)
+- [Project Structure](#-project-structure)
+- [How It Works](#-how-it-works)
+- [Troubleshooting](#-troubleshooting)
+- [Credits](#credits)
 
-## Tech Stack
-- **Backend**: FastAPI (Python)
-- **Database**: SQLite
+## ✨ Features
+
+- 🎯 **Smart Card Recommendations** - Automatically recommends the best card based on merchant category
+- 💰 **Real-time Cashback Calculation** - Shows exact cashback earned on each transaction
+- 📱 **NFC/RFID Integration** - Tap your card to get instant recommendations
+- 🏪 **Merchant Recognition** - Identifies merchants and categorizes transactions
+- 📊 **Transaction History** - Track all purchases with detailed cashback information
+- 🔐 **Secure Authentication** - User signup/login with encrypted passwords
+- 🎨 **Modern UI** - Beautiful React Native interface with real-time updates
+
+## 🛠 Tech Stack
+
+- **Backend**: FastAPI (Python 3.13)
+- **Database**: SQLite with SQLAlchemy ORM
 - **Frontend**: React Native (Android)
-- **Web Scraping**: BeautifulSoup4, Requests
-- **Scheduling**: APScheduler (for automated updates)
+- **Hardware**: ESP32 with RFID-RC522 module
+- **Authentication**: bcrypt password hashing
+- **API**: RESTful with automatic OpenAPI documentation
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
 - Python 3.8+
 - Node.js 16+
-- npm
-- Android Studio with Android Emulator
-- Android SDK configured
+- Android Studio with Android Emulator OR physical Android device
+- Java 17 (for Android builds)
 
-### 1. Backend Setup
+### Option 1: Automated Setup (Recommended)
 
 ```bash
-# Navigate to backend directory
-cd backend
+# Clone the repository
+git clone https://github.com/calistaannelise/dubhacks.git
+cd dubhacksv5
 
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Seed the database with sample data
-python3 seed_data.py
-
-# Start the FastAPI server
-python3 main.py
+# Run the startup script
+./start.sh
 ```
 
-The backend will be available at `http://localhost:8000`
+This will:
+1. Set up Python virtual environment
+2. Install all dependencies
+3. Seed the database with sample data
+4. Start the backend server
+5. Start Metro bundler
 
-API Documentation: `http://localhost:8000/docs`
-
-### 2. Frontend Setup (React Native)
-
-Open a new terminal:
-
+Then in a **new terminal**:
 ```bash
-# Navigate to frontend directory
+cd frontend
+npm run android
+```
+
+### Option 2: Manual Setup
+
+**1. Backend Setup**
+```bash
+cd backend
+
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Seed database
+python3 seed_data.py
+
+# Start server
+python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+**2. Frontend Setup**
+```bash
 cd frontend
 
 # Install dependencies
 npm install
 
 # Start Metro bundler
-npm start
+npx react-native start
 ```
 
-### 3. Run the Android App
-
-Open a third terminal:
-
+**3. Run on Android**
 ```bash
+# In a new terminal
 cd frontend
-
-# Make sure Android emulator is running, then:
-npm run android
+npx react-native run-android
 ```
 
-The app will launch in your Android Emulator.
+### 📱 Running on Physical Device
 
-## Usage
+If using a physical Android device, update the IP address in:
+- `frontend/src/config/api.js` (line 11)
+- `frontend/src/screens/LoginScreen.js` (line 56)
+- `frontend/src/screens/SignUpScreen.js` (line 84)
 
-### Mobile App
+Replace `COMPUTER_IP` with your computer's local IP address (find it with `ifconfig` on Mac/Linux or `ipconfig` on Windows).
 
-1. Launch the app in your Android Emulator
-2. Navigate through the authentication screens
-3. Access your credit card portfolio and recommendations
-4. The app communicates with the backend API at `http://10.0.2.2:8000` (Android emulator address)
+**Important**: Your phone and computer must be on the same Wi-Fi network!
 
-### API Testing
+## 📖 Usage
 
-Test the backend API directly:
+### 1. Sign Up / Login
+- Create an account with email and password
+- Login to access your dashboard
 
-```bash
-cd backend
-python3 test_api.py
-```
+### 2. Add Credit Cards
+- Tap "Your Cards" to view your card portfolio
+- Add new cards with issuer, name, and last 4 digits
+- System automatically loads reward rules
 
-This will test:
-- Card recommendations for dining, groceries, and gas
-- User and card retrieval
-- MCC code lookups
-- Summary endpoints
+### 3. Make Purchases
+- Tap "Pay with NFC" button
+- Hold your phone near the RFID reader
+- System recommends the best card for the merchant
+- Transaction is automatically recorded
 
-## Sample Data
+### 4. View Transaction History
+- See all recent transactions on the home screen
+- View merchant name, amount spent, and cashback earned
+- Compare rewards across different cards
 
-The seed script creates a demo user with 4 credit cards:
+## 💳 Sample Credit Cards
 
-| Card | Best Categories | Cashback Rate |
-|------|----------------|---------------|
-| **Amex Blue Cash Preferred** | Groceries | 6% |
-| **BoFA Customized Cash Rewards** | Dining | 3% |
-| **Amex Blue Cash Everyday** | Online Shopping | 3% |
-| **Delta Skymiles Blue American Express** | Travel | 2% |
+The seed script creates a demo user with these cards:
 
-## API Endpoints
+| Card | Best For | Cashback |
+|------|----------|----------|
+| **Blue Cash Preferred** (Amex) | Groceries | 6% |
+| **Customized Cash Rewards** (BofA) | Dining | 3% |
+| **Prime Visa** (Chase) | Online Shopping | 5% |
+| **Blue Cash Everyday** (Amex) | Gas | 3% |
 
-### Core Endpoints
+## 🔌 API Endpoints
 
-- `POST /users` - Create a new user
-- `GET /users` - List all users
-- `POST /users/{user_id}/cards` - Add a credit card
-- `GET /users/{user_id}/cards` - Get user's cards
-- `POST /cards/{card_id}/rules` - Add reward rules
-- `GET /cards/{card_id}/rules` - Get card's reward rules
+Full API documentation available at `http://localhost:8000/docs`
 
-### Recommendation
+### Key Endpoints
 
-- `POST /recommend` - Get best card recommendation
-  ```json
-  {
-    "user_id": 1,
-    "mcc_code": "5812",
-    "amount_cents": 5000
-  }
-  ```
+- **Authentication**
+  - `POST /users` - Sign up
+  - `POST /login` - Login
 
-### MCC Lookup
+- **Cards**
+  - `GET /users/{user_id}/cards` - Get user's cards
+  - `POST /users/{user_id}/cards` - Add a card
+  - `POST /cards/{card_id}/rules` - Add reward rules
 
-- `GET /mcc/{mcc_code}` - Get category for MCC code
-- `GET /categories` - List all categories and MCC codes
+- **Recommendations**
+  - `POST /recommend` - Get best card (reads from hello.json)
 
-### Web Scraper
-
-- `POST /scraper/run` - Run Bank of America scraper
-- `GET /scraper/results` - Get scraped reward data
-
-### Analytics
-
-- `GET /summary/{user_id}` - Get user summary with all cards and rewards
+- **Transactions**
+  - `GET /transactions/{user_id}` - Get transaction history
+  - `GET /analytics/{user_id}` - Get spending analytics
 
 ## MCC Codes Reference
 
@@ -159,116 +183,81 @@ Common merchant category codes:
 - **4111** - Transit
 - **4899** - Streaming Services
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-DUBHACKS/
+dubhacksv5/
 ├── backend/
 │   ├── main.py              # FastAPI application
+│   ├── database.py          # SQLAlchemy models
 │   ├── mcc_data.py          # MCC category mappings
-│   ├── scraper.py           # Bank of America web scraper
-│   ├── seed_data.py         # Database seeding script
+│   ├── seed_data.py         # Database seeding
 │   └── requirements.txt     # Python dependencies
 ├── frontend/
-│   ├── App.tsx             # Main React Native component
-│   ├── index.js            # React Native entry point
 │   ├── src/
-│   │   ├── navigation/     # Navigation setup
-│   │   ├── screens/        # App screens
-│   │   ├── components/     # Reusable components
-│   │   └── theme/          # Styling and theme
-│   ├── android/            # Android native code
-│   └── package.json        # Node dependencies
-└── README.md               # This file
-
-When you request a recommendation:
-
-1. System looks up the category from the MCC code
-2. Queries all your cards and their reward rules
-3. Checks which rules are currently active (based on dates)
-4. Calculates cashback for each card
-5. Applies spending caps if applicable
-6. Returns the card with the highest cashback
-
-### 2. Web Scraper
-
-The Bank of America scraper:
-
-1. Fetches HTML from BofA credit card pages
-2. Extracts reward text using BeautifulSoup
-3. Parses text with regex to extract:
-   - Cashback percentages
-   - Categories
-   - Spending caps
-   - Expiration dates
-4. Stores raw and parsed data in the database
-5. Falls back to known data if scraping fails
-
-### 3. Dynamic Reward Rules
-
-Each card can have multiple reward rules with:
-
-- **Multiplier** - Cashback percentage (e.g., 3.0 for 3%)
-- **Category** - Spending category (dining, groceries, etc.)
-- **Cap** - Maximum cashback per period
-- **Start/End Dates** - Time-limited promotions
-- **Intro Duration** - First-year bonus periods
-- **Activation Required** - Whether user must activate
-
-## Testing the Scraper
-
-The scraper is configured to work with Bank of America's website. It includes:
-
-1. **Real scraping** - Attempts to fetch live data from BofA
-2. **Fallback data** - Uses known reward structures if scraping fails
-3. **Respectful delays** - 2-second delays between requests
-4. **Error handling** - Graceful failures with informative messages
-
-To test via API:
-```bash
-curl -X POST http://localhost:8000/scraper/run
-curl http://localhost:8000/scraper/results
+│   │   ├── screens/         # App screens (Home, Login, SignUp, AddCard)
+│   │   ├── components/      # Reusable components (Button, Input, PayButton)
+│   │   ├── services/        # API service layer
+│   │   └── theme/           # Colors, typography, spacing
+│   ├── android/             # Android native code
+│   └── package.json         # Node dependencies
+├── firmware/
+│   ├── ble.py              # ESP32 BLE/RFID integration
+│   └── hello.json          # Current tap data
+└── start.sh                # Automated startup script
 ```
 
-## Future Enhancements
+## 🎯 How It Works
 
-Based on the PRD, future phases could include:
+1. **Card Tap**: User taps RFID card on ESP32 reader
+2. **Data Transfer**: ESP32 sends MCC code via BLE to `hello.json`
+3. **Recommendation**: Backend reads JSON, calculates best card based on rewards
+4. **Transaction**: System records transaction with merchant name and cashback
+5. **Display**: Frontend shows transaction history with detailed rewards info
 
-- **Phase 2**: Automated scheduling with APScheduler
-- **Phase 3**: Real-time routing with Lithic/Marqeta
-- **Phase 4**: ML-based category prediction
-- **Phase 5**: LLM-powered reward text parsing
-- **Phase 6**: Partner integrations for structured data feeds
+## 🔧 Troubleshooting
 
-## Troubleshooting
+### Port Already in Use
+```bash
+# Kill processes on ports 8000 and 8081
+lsof -ti:8000 | xargs kill -9
+lsof -ti:8081 | xargs kill -9
+```
 
-### Backend won't start
-- Make sure all dependencies are installed: `pip install -r requirements.txt`
-- Check if port 8000 is available
-- Run seed script first: `python seed_data.py`
+### Network Request Failed (Physical Device)
+- Update IP address in `frontend/src/config/api.js`
+- Ensure phone and computer are on same Wi-Fi
+- Check firewall isn't blocking port 8000
 
-### Mobile app won't start
-- Install dependencies: `npm install`
-- Make sure Metro bundler is running: `npm start`
-- Make sure Android emulator is running
-- Use `http://10.0.2.2:8000` for backend connection (NOT `localhost:8000`)
-- Clean build: `cd android && ./gradlew clean && cd ..`
+### App Won't Build
+```bash
+cd frontend/android
+./gradlew clean
+cd ../..
+npx react-native run-android
+```
 
-### No recommendations returned
-- Verify you ran the seed script
-- Check that user_id=1 exists
-- Try different MCC codes
-
-### Scraper fails
-- This is expected! The scraper includes fallback data
-- Bank websites often block scrapers
-- The fallback data demonstrates the parsing logic
-
-## License
-
-MIT License - Feel free to use this for your projects!
+### Database Issues
+```bash
+cd backend
+rm smartcard.db  # Delete old database
+python3 seed_data.py  # Recreate with fresh data
+```
 
 ## Credits
 
-Built for DubHacks - Based on the SmartCard PRD by Andrew Wilbert Vidianto
-# dubhacks
+Built for **DubHacks 2024** - Based on the SmartCard PRD
+
+**Team Members:**
+- George Evans
+- Calista Vidianto
+- Patrick Widjaya
+
+**Special Thanks:**
+- DubHacks organizers and mentors
+- React Native community
+- FastAPI community
+
+---
+
+Made with ❤️ at DubHacks 2024

@@ -33,7 +33,7 @@ class Category(Base):
     __tablename__ = "categories"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     mcc_codes = Column(Text)  # Comma-separated MCC codes
     rules = relationship("CardRule", back_populates="category")
 

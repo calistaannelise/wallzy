@@ -130,7 +130,6 @@ const AddCardScreen = ({ navigateTo, onCardAdded }) => {
                 number: formData.cardNumber.replace(/\d(?=\d{4})/g, '*'),
                 expiry: `${formData.expiryMonth}/${formData.expiryYear}`,
                 image: '💳',
-                balance: '$0.00',
                 type: network,
                 issuer: issuer,
                 last_four: lastFour,
@@ -162,8 +161,8 @@ const AddCardScreen = ({ navigateTo, onCardAdded }) => {
     const getCardIssuer = (cardNumber) => {
         // Determine issuer based on card number patterns
         if (cardNumber.startsWith('4')) return 'Visa';
-        if (cardNumber.startsWith('51') || cardNumber.startsWith('52') || 
-            cardNumber.startsWith('53') || cardNumber.startsWith('54') || 
+        if (cardNumber.startsWith('51') || cardNumber.startsWith('52') ||
+            cardNumber.startsWith('53') || cardNumber.startsWith('54') ||
             cardNumber.startsWith('55')) return 'Mastercard';
         if (cardNumber.startsWith('34') || cardNumber.startsWith('37')) return 'American Express';
         if (cardNumber.startsWith('6011') || cardNumber.startsWith('65')) return 'Discover';
@@ -206,7 +205,6 @@ const AddCardScreen = ({ navigateTo, onCardAdded }) => {
                                 : 'MM/YY'
                             }
                         </Text>
-                        <Text style={styles.previewBalance}>$0.00</Text>
                     </View>
                 </View>
 
@@ -348,11 +346,6 @@ const styles = StyleSheet.create({
     previewExpiry: {
         fontSize: typography.fontSize.base,
         color: colors.textSecondary,
-    },
-    previewBalance: {
-        fontSize: typography.fontSize.lg,
-        color: colors.primary,
-        fontWeight: typography.fontWeight.bold,
     },
     form: {
         flex: 1,

@@ -11,6 +11,7 @@ import {
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import WalletIcon from '../components/WalletIcon';
 import { authStorage } from '../services/authStorage';
 
 const SignUpScreen = ({ navigateTo }) => {
@@ -69,19 +70,19 @@ const SignUpScreen = ({ navigateTo }) => {
   const handleSignUp = async () => {
     if (!validateForm()) return;
     setLoading(true);
-  
+
     try {
       const payload = {
         email: formData.email,
         name: `${formData.firstName} ${formData.lastName}`,
         password: formData.password,
       };
-  
+
       // For Android emulator → 10.0.2.2
       // For iOS simulator → 127.0.0.1
       // For physical device → your computer's LAN IP (e.g. 192.168.x.x)
-      const API_URL = "http://10.0.2.2:8000/users";
-  
+      const API_URL = "http://10.18.160.41:8000/users";
+
       const response = await fetch(API_URL, {
         method: "POST",
         headers: {
@@ -89,9 +90,9 @@ const SignUpScreen = ({ navigateTo }) => {
         },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         // Store user data and auto-login
         authStorage.setUser({
@@ -99,7 +100,7 @@ const SignUpScreen = ({ navigateTo }) => {
           email: data.email,
           name: data.name,
         });
-        
+
         Alert.alert('Success', 'Account created successfully!', [
           { text: 'OK', onPress: () => navigateTo('Home') }
         ]);
@@ -113,7 +114,7 @@ const SignUpScreen = ({ navigateTo }) => {
       setLoading(false);
     }
   };
-  
+
 
   const updateFormData = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -131,13 +132,11 @@ const SignUpScreen = ({ navigateTo }) => {
       >
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoText}>F</Text>
-            </View>
+            <WalletIcon size={60} />
           </View>
           <Text style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>
-            Join our fintech platform today
+            Join our Wallzy platform today
           </Text>
         </View>
 
@@ -234,37 +233,20 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: spacing.lg,
   },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.background,
-  },
   title: {
-    fontSize: typography.fontSize['4xl'],
+    fontSize: typography.fontSize['5xl'],
     fontWeight: typography.fontWeight.bold,
     color: colors.text,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: typography.fontSize.lg,
     color: colors.textSecondary,
     textAlign: 'center',
+    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
+    marginBottom: spacing.lg,
   },
   form: {
     flex: 1,
@@ -279,8 +261,9 @@ const styles = StyleSheet.create({
     minWidth: 140,
   },
   signUpButton: {
-    marginTop: spacing.md,
+    marginTop: spacing.xl,
     marginBottom: spacing.lg,
+    alignSelf: 'stretch',
   },
   loginContainer: {
     flexDirection: 'row',
@@ -294,8 +277,8 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     fontSize: typography.fontSize.base,
-    color: colors.primary,
-    fontWeight: typography.fontWeight.semibold,
+    color: colors.accent,
+    fontWeight: typography.fontWeight.bold,
   },
 });
 
