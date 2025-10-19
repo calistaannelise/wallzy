@@ -25,7 +25,7 @@ An intelligent credit card recommendation system that automatically suggests the
 - 🎨 **Modern UI** - Beautiful React Native interface with real-time updates
 
 ## 🛠 Tech Stack
-
+- **Firmware**: FreeRTOS
 - **Backend**: FastAPI (Python 3.13)
 - **Database**: SQLite with SQLAlchemy ORM
 - **Frontend**: React Native (Android)
