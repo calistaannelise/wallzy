@@ -1,3 +1,8 @@
+# -- run ---
+# python3 -m venv venv && source venv/bin/activate
+# pip install bleak
+# python ble_to_json.py
+
 # ble_rfid_to_json_persistent.py
 # pip install bleak
 import asyncio, json, time, os, signal
