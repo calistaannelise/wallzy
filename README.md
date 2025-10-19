@@ -2,6 +2,18 @@
 
 An intelligent credit card recommendation system that automatically suggests the best card for each purchase based on merchant categories and reward multipliers. Built with NFC/RFID tap functionality for seamless real-world usage.
 
+## 📋 Table of Contents
+
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Usage](#-usage)
+- [API Endpoints](#-api-endpoints)
+- [Project Structure](#-project-structure)
+- [How It Works](#-how-it-works)
+- [Troubleshooting](#-troubleshooting)
+- [Credits](#credits)
+
 ## ✨ Features
 
 - 🎯 **Smart Card Recommendations** - Automatically recommends the best card based on merchant category
@@ -232,11 +244,20 @@ rm smartcard.db  # Delete old database
 python3 seed_data.py  # Recreate with fresh data
 ```
 
-## License
-
-MIT License - Feel free to use this for your projects!
-
 ## Credits
 
-Built for DubHacks - Based on the SmartCard PRD by Andrew Wilbert Vidianto
-# dubhacks
+Built for **DubHacks 2024** - Based on the SmartCard PRD
+
+**Team Members:**
+- George Evans
+- Calista Vidianto
+- Patrick Widjaya
+
+**Special Thanks:**
+- DubHacks organizers and mentors
+- React Native community
+- FastAPI community
+
+---
+
+Made with ❤️ at DubHacks 2024
