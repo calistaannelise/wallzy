@@ -11,6 +11,7 @@ import {
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import WalletIcon from '../components/WalletIcon';
 import { authStorage } from '../services/authStorage';
 
 const LoginScreen = ({ navigateTo }) => {
@@ -51,7 +52,7 @@ const LoginScreen = ({ navigateTo }) => {
       // For Android emulator → 10.0.2.2
       // For iOS simulator → 127.0.0.1
       // For physical device → your computer's LAN IP (e.g. 192.168.x.x)
-      const API_URL = "http://10.0.2.2:8000/login";
+      const API_URL = "http://localhost:8000/login";
 
       const response = await fetch(API_URL, {
         method: "POST",
@@ -70,7 +71,7 @@ const LoginScreen = ({ navigateTo }) => {
           email: data.email,
           name: data.name,
         });
-        
+
         Alert.alert('Success', `Welcome back, ${data.name}!`, [
           { text: 'OK', onPress: () => navigateTo('Home') }
         ]);
@@ -93,13 +94,11 @@ const LoginScreen = ({ navigateTo }) => {
       >
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoText}>F</Text>
-            </View>
+            <WalletIcon size={60} />
           </View>
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subtitle}>
-            Sign in to your fintech account
+            Sign in to your Wallzy account
           </Text>
         </View>
 
@@ -165,27 +164,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: spacing.lg,
-  },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  logoText: {
-    fontSize: 32,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.background,
   },
   title: {
     fontSize: typography.fontSize['4xl'],
