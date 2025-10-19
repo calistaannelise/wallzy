@@ -53,7 +53,7 @@ const LoginScreen = ({ navigateTo }) => {
       // For Android emulator → 10.0.2.2
       // For iOS simulator → 127.0.0.1
       // For physical device → your computer's LAN IP (e.g. 192.168.x.x)
-      const API_URL = "http://10.0.2.2:8000/login";
+      const API_URL = "http://10.18.160.41:8000/login";
 
       const response = await fetch(API_URL, {
         method: "POST",

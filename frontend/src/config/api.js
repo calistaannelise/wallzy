@@ -7,11 +7,14 @@
 
 import { Platform } from 'react-native';
 
+// Computer's IP address on local network
+const COMPUTER_IP = '10.18.160.41';
+
 // Backend API base URL
 const getBaseUrl = () => {
   if (Platform.OS === 'android') {
-    // For Android emulator, use 10.0.2.2 to access host machine
-    return 'http://10.0.2.2:8000';
+    // Use computer's IP for physical devices (works for both emulator and real device)
+    return `http://${COMPUTER_IP}:8000`;
   } else if (Platform.OS === 'ios') {
     // iOS simulator can use localhost
     return 'http://localhost:8000';

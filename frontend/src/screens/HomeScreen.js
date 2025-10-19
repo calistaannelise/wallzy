@@ -82,17 +82,25 @@ const HomeScreen = ({ navigateTo }) => {
             const transformedTxns = txns.map(txn => {
                 const isExpense = txn.amount_cents > 0;
                 const amount = Math.abs(txn.amount_dollars);
+                
+                // Format cashback/rewards for description
+                const cashbackDollars = (txn.cashback_cents / 100).toFixed(2);
+                const multiplier = txn.multiplier || 1.0;
+                const rewardsDescription = txn.cashback_cents > 0 
+                    ? `Earned $${cashbackDollars} cashback (${multiplier}x)`
+                    : 'No rewards earned';
 
                 return {
                     id: txn.id.toString(),
-                    title: txn.merchant_name || 'Transaction',
-                    description: txn.description || getCategoryDescription(txn.category),
+                    title: txn.merchant_name || getCategoryDescription(txn.category),
+                    description: rewardsDescription,
                     amount: isExpense ? `-$${amount.toFixed(2)}` : `+$${amount.toFixed(2)}`,
                     date: formatTransactionDate(txn.transaction_date),
                     type: isExpense ? 'expense' : 'income',
                     category: txn.category || 'other',
                     cardUsed: txn.card_name,
-                    rewards: txn.rewards > 0 ? `+${txn.rewards} points` : null
+                    cashbackAmount: txn.cashback_cents > 0 ? `+$${cashbackDollars}` : null,
+                    multiplier: multiplier
                 };
             });
 
@@ -173,21 +181,21 @@ const HomeScreen = ({ navigateTo }) => {
                     <Text style={styles.transactionDescription}>{item.description}</Text>
                     <Text style={styles.transactionDate}>{item.date}</Text>
                     {item.cardUsed && (
-                        <View style={styles.transactionMeta}>
-                            <Text style={styles.cardUsedText}>💳 {item.cardUsed}</Text>
-                            {item.rewards && (
-                                <Text style={styles.rewardsText}>{item.rewards}</Text>
-                            )}
-                        </View>
+                        <Text style={styles.cardUsedText}>💳 {item.cardUsed}</Text>
                     )}
                 </View>
             </View>
-            <Text style={[
-                styles.transactionAmount,
-                item.type === 'income' ? styles.incomeAmount : styles.expenseAmount
-            ]}>
-                {item.amount}
-            </Text>
+            <View style={styles.transactionRight}>
+                <Text style={[
+                    styles.transactionAmount,
+                    item.type === 'income' ? styles.incomeAmount : styles.expenseAmount
+                ]}>
+                    {item.amount}
+                </Text>
+                {item.cashbackAmount && (
+                    <Text style={styles.cashbackBadge}>{item.cashbackAmount}</Text>
+                )}
+            </View>
         </View>
     );
 
@@ -536,16 +544,24 @@ const styles = StyleSheet.create({
     cardUsedText: {
         fontSize: typography.fontSize.xs,
         color: colors.textSecondary,
-        marginRight: spacing.md,
+        marginTop: spacing.xs,
     },
-    rewardsText: {
-        fontSize: typography.fontSize.xs,
-        color: colors.primary,
-        fontWeight: typography.fontWeight.medium,
+    transactionRight: {
+        alignItems: 'flex-end',
     },
     transactionAmount: {
         fontSize: typography.fontSize.lg,
         fontWeight: typography.fontWeight.semibold,
+        marginBottom: spacing.xs,
+    },
+    cashbackBadge: {
+        fontSize: typography.fontSize.sm,
+        color: colors.success,
+        fontWeight: typography.fontWeight.bold,
+        backgroundColor: colors.success + '20',
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 2,
+        borderRadius: 8,
     },
     incomeAmount: {
         color: colors.success,
