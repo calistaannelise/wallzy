@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
+import json
+import random
 import database
 import mcc_data
 import auth
@@ -22,6 +24,15 @@ app.add_middleware(
 
 # Initialize database
 database.init_db()
+
+# Helper functions
+def read_json():
+    """Read data from hello.json file"""
+    import os
+    # Path to hello.json in the firmware directory
+    json_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "firmware", "hello.json")
+    with open(json_path, "r") as f:
+        return json.load(f)
 
 # Pydantic models
 class UserCreate(BaseModel):
@@ -247,43 +258,66 @@ def get_card_rules(card_id: int, db: Session = Depends(database.get_db)):
         })
     return result
 
-@app.post("/recommend")
-def recommend_card(request: RecommendRequest, db: Session = Depends(database.get_db)):
+@app.post("/recommend", response_model=RecommendResponse)
+def recommend_card(db: Session = Depends(database.get_db)):
     """
     Recommend the best card for a transaction based on MCC code
+    Reads data from hello.json file
     """
 
     # Get json data
     data = read_json()
 
     # Get category from MCC
-    # category = mcc_data.get_category_from_mcc(request.mcc_code)
     category = mcc_data.get_category_from_mcc(data["mcc"])
     uid = data["uid"]
+    random_amount_cents = random.randint(500, 50000)
+    
+    # Determine user_id (can be mapped from UID if needed)
+    user_id = 1  # Default to user 1, or map from UID
     
     # Get user's cards
-    cards = db.query(database.Card).filter(database.Card.user_id == request.user_id).all()
+    cards = db.query(database.Card).filter(database.Card.user_id == user_id).all()
     if not cards:
         raise HTTPException(status_code=404, detail="No cards found for user")
     
-    if (uid == "C10AAEA4"):
+    if uid == "C10AAEA4":
         userid = 1
         card_ids = [1, 2, 3]
         random_card_id = random.choice(card_ids)
         random_card = db.query(database.Card).filter(database.Card.id == random_card_id).first()
 
-        rules = db.query(database.CardRule).filter(database.CardRule.random_card_id).all()
+        rules = db.query(database.CardRule).filter(database.CardRule.card_id == random_card_id).all()
 
         multiplier = 1.0
-        cashback = int((request.amount_cents) / 100)
+        cashback = int((random_amount_cents) / 100)
+
+        print("random card: " + random_card.card_name)
 
         for rule in rules:
             cat = db.query(database.Category).filter(database.Category.id == rule.category_id).first()
             if cat and cat.name == category:
                 multiplier = rule.multiplier
-                cashback = int((request.amount_cents * multiplier) / 100)
+                cashback = int((random_amount_cents * multiplier) / 100)
                 break
 
+        # Record transaction in database
+        db_transaction = database.Transaction(
+            user_id=user_id,
+            card_id=random_card.id,
+            amount_cents=random_amount_cents,
+            mcc_code=data["mcc"],
+            merchant_name=None,
+            category=category,
+            rewards=cashback,
+            multiplier=multiplier,
+            transaction_date=datetime.now().isoformat(),
+            description=f"RFID tap - UID: {uid}"
+        )
+        db.add(db_transaction)
+        db.commit()
+        db.refresh(db_transaction)
+        
         return RecommendResponse(
             recommended_card_id=random_card.id,
             card_name=random_card.card_name,
@@ -292,14 +326,14 @@ def recommend_card(request: RecommendRequest, db: Session = Depends(database.get
             cashback_cents=cashback,
             category=category,
             reason="Random card"
-    )
+        )
 
     best_card = None
     best_multiplier = 0
     best_cashback = 0
     best_reason = ""
     
-    today = datetime.now().date()
+    # today = datetime.now().date()
     
     for card in cards:
         # Get active rules for this card and category
@@ -334,7 +368,7 @@ def recommend_card(request: RecommendRequest, db: Session = Depends(database.get
             
             # Calculate cashback
             multiplier = rule.multiplier
-            cashback = int((request.amount_cents * multiplier) / 100)
+            cashback = int((random_amount_cents * multiplier) / 100)
             
             # # Check spending cap
             # if rule.cap_cents and cashback > rule.cap_cents:
@@ -351,6 +385,25 @@ def recommend_card(request: RecommendRequest, db: Session = Depends(database.get
     
     if not best_card:
         raise HTTPException(status_code=404, detail="No applicable card rules found")
+   
+    print("best card: " + best_card.card_name)
+    
+    # Record transaction in database
+    db_transaction = database.Transaction(
+        user_id=user_id,
+        card_id=best_card.id,
+        amount_cents=random_amount_cents,
+        mcc_code=data["mcc"],
+        merchant_name=None,
+        category=category,
+        rewards=best_cashback,
+        multiplier=best_multiplier,
+        transaction_date=datetime.now().isoformat(),
+        description=f"RFID tap - UID: {uid}"
+    )
+    db.add(db_transaction)
+    db.commit()
+    db.refresh(db_transaction)
     
     return RecommendResponse(
         recommended_card_id=best_card.id,
@@ -532,7 +585,7 @@ def create_transaction(transaction: TransactionCreate, db: Session = Depends(dat
         mcc_code=transaction.mcc_code,
         merchant_name=transaction.merchant_name,
         category=category,
-        cashback_cents=best_cashback,
+        rewards=best_cashback,
         multiplier=best_multiplier,
         transaction_date=datetime.now().isoformat(),
         description=transaction.description
@@ -550,7 +603,7 @@ def create_transaction(transaction: TransactionCreate, db: Session = Depends(dat
         amount_cents=db_transaction.amount_cents,
         mcc_code=db_transaction.mcc_code,
         category=db_transaction.category,
-        cashback_cents=db_transaction.cashback_cents,
+        cashback_cents=db_transaction.rewards,
         multiplier=db_transaction.multiplier,
         transaction_date=db_transaction.transaction_date,
         merchant_name=db_transaction.merchant_name
@@ -577,8 +630,8 @@ def get_user_transactions(user_id: int, limit: int = 50, db: Session = Depends(d
             "mcc_code": txn.mcc_code,
             "category": txn.category,
             "merchant_name": txn.merchant_name,
-            "cashback_cents": txn.cashback_cents,
-            "cashback_dollars": txn.cashback_cents / 100,
+            "cashback_cents": txn.rewards,
+            "cashback_dollars": txn.rewards / 100,
             "multiplier": txn.multiplier,
             "transaction_date": txn.transaction_date,
             "description": txn.description
@@ -604,8 +657,8 @@ def get_card_transactions(card_id: int, limit: int = 50, db: Session = Depends(d
             "mcc_code": txn.mcc_code,
             "category": txn.category,
             "merchant_name": txn.merchant_name,
-            "cashback_cents": txn.cashback_cents,
-            "cashback_dollars": txn.cashback_cents / 100,
+            "cashback_cents": txn.rewards,
+            "cashback_dollars": txn.rewards / 100,
             "multiplier": txn.multiplier,
             "transaction_date": txn.transaction_date,
             "description": txn.description
@@ -633,7 +686,7 @@ def get_user_analytics(user_id: int, db: Session = Depends(database.get_db)):
         }
     
     total_spent = sum(t.amount_cents for t in transactions)
-    total_cashback = sum(t.cashback_cents for t in transactions)
+    total_cashback = sum(t.rewards for t in transactions)
     avg_rate = (total_cashback / total_spent * 100) if total_spent > 0 else 0
     
     # By category
@@ -647,7 +700,7 @@ def get_user_analytics(user_id: int, db: Session = Depends(database.get_db)):
             }
         by_category[txn.category]["count"] += 1
         by_category[txn.category]["total_spent_cents"] += txn.amount_cents
-        by_category[txn.category]["total_cashback_cents"] += txn.cashback_cents
+        by_category[txn.category]["total_cashback_cents"] += txn.rewards
     
     # By card
     by_card = {}
@@ -663,7 +716,7 @@ def get_user_analytics(user_id: int, db: Session = Depends(database.get_db)):
             }
         by_card[card_key]["count"] += 1
         by_card[card_key]["total_spent_cents"] += txn.amount_cents
-        by_card[card_key]["total_cashback_cents"] += txn.cashback_cents
+        by_card[card_key]["total_cashback_cents"] += txn.rewards
     
     return {
         "total_transactions": len(transactions),
@@ -679,7 +732,3 @@ def get_user_analytics(user_id: int, db: Session = Depends(database.get_db)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-def read_json():
-    with open("hello.json", "r") as f:
-        return json.load(f)
