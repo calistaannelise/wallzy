@@ -36,7 +36,7 @@ pip install -q -r requirements.txt
 # Check if database exists
 if [ ! -f "smartcard.db" ]; then
     echo "🌱 Seeding database with sample data..."
-    python seed_data.py
+    python3 seed_data.py
 else
     echo "✅ Database already exists"
 fi
@@ -46,7 +46,7 @@ echo "🚀 Starting FastAPI backend on http://localhost:8000"
 echo ""
 
 # Start backend in background
-python main.py &
+python3 main.py &
 BACKEND_PID=$!
 
 # Wait for backend to start
@@ -54,7 +54,7 @@ sleep 3
 
 # Setup frontend
 echo ""
-echo "📦 Setting up frontend..."
+echo "📦 Setting up React Native frontend..."
 cd ../frontend
 
 if [ ! -d "node_modules" ]; then
@@ -65,20 +65,28 @@ else
 fi
 
 echo ""
-echo "🚀 Starting React frontend on http://localhost:3000"
+echo "🚀 Starting Metro bundler on http://localhost:8081"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ SmartCard MVP is running!"
+echo "✅ SmartCard MVP backend is running!"
 echo ""
-echo "📍 Frontend: http://localhost:3000"
 echo "📍 Backend API: http://localhost:8000"
 echo "📍 API Docs: http://localhost:8000/docs"
+echo "📍 Metro Bundler: http://localhost:8081"
+echo ""
+echo "Next steps:"
+echo "  1. This terminal will run Metro bundler"
+echo "  2. Make sure Android Emulator is running"
+echo "  3. Open a NEW terminal and run:"
+echo "     cd frontend && npm run android"
+echo ""
+echo "💡 Tip: Android emulator uses http://10.0.2.2:8000 to connect to backend"
 echo ""
 echo "Press Ctrl+C to stop all services"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# Start frontend (this will block)
+# Start Metro bundler (this will block)
 npm start
 
 # Cleanup on exit

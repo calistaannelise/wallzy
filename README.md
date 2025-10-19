@@ -7,16 +7,15 @@ An MVP implementation of the SmartCard system that automatically recommends the 
 ✅ **Card Recommendation Engine** - Get the best card for any purchase based on MCC codes
 ✅ **Dynamic Reward Rules** - Support for time-based rewards, spending caps, and intro bonuses
 ✅ **Web Scraper** - Automatically scrape Bank of America credit card rewards
-✅ **Modern UI** - Clean React interface to test the system
+✅ **Mobile App** - React Native Android app for seamless user experience
 ✅ **RESTful API** - FastAPI backend with full documentation
 
 ## Tech Stack
 - **Backend**: FastAPI (Python)
 - **Database**: SQLite
-- **Frontend**: React
+- **Frontend**: React Native (Android)
 - **Web Scraping**: BeautifulSoup4, Requests
 - **Scheduling**: APScheduler (for automated updates)
-- **Firmware**: FreeRTOS ESP32, RFID, BLE
 
 ## Quick Start
 
@@ -24,7 +23,9 @@ An MVP implementation of the SmartCard system that automatically recommends the 
 
 - Python 3.8+
 - Node.js 16+
-- npm or yarn
+- npm
+- Android Studio with Android Emulator
+- Android SDK configured
 
 ### 1. Backend Setup
 
@@ -36,17 +37,17 @@ cd backend
 pip install -r requirements.txt
 
 # Seed the database with sample data
-python seed_data.py
+python3 seed_data.py
 
 # Start the FastAPI server
-python main.py
+python3 main.py
 ```
 
 The backend will be available at `http://localhost:8000`
 
 API Documentation: `http://localhost:8000/docs`
 
-### 2. Frontend Setup
+### 2. Frontend Setup (React Native)
 
 Open a new terminal:
 
@@ -57,42 +58,46 @@ cd frontend
 # Install dependencies
 npm install
 
-# Start the React development server
+# Start Metro bundler
 npm start
 ```
 
-The frontend will open automatically at `http://localhost:3000`
+### 3. Run the Android App
+
+Open a third terminal:
+
+```bash
+cd frontend
+
+# Make sure Android emulator is running, then:
+npm run android
+```
+
+The app will launch in your Android Emulator.
 
 ## Usage
 
-### 1. Card Recommendations
+### Mobile App
 
-1. Go to the **"Recommend Card"** tab
-2. Select an MCC code (merchant category) - e.g., "5812 - Dining/Restaurants"
-3. Enter a purchase amount - e.g., "$50.00"
-4. Click **"Get Recommendation"**
-5. See which card gives you the best cashback!
+1. Launch the app in your Android Emulator
+2. Navigate through the authentication screens
+3. Access your credit card portfolio and recommendations
+4. The app communicates with the backend API at `http://10.0.2.2:8000` (Android emulator address)
 
-### 2. View Your Cards
+### API Testing
 
-1. Go to the **"My Cards"** tab
-2. See all your linked credit cards and their reward rules
-3. The sample data includes 4 popular cards:
-   - Bank of America Customized Cash Rewards
-   - Chase Freedom Unlimited
-   - Citi Custom Cash
-   - American Express Blue Cash Preferred
+Test the backend API directly:
 
-### 3. Web Scraper (Bank of America)
+```bash
+cd backend
+python3 test_api.py
+```
 
-1. Go to the **"Web Scraper"** tab
-2. Click **"Run Scraper"**
-3. The system will scrape Bank of America's credit card pages
-4. View parsed reward information including:
-   - Cashback percentages
-   - Categories
-   - Spending caps
-   - Expiration dates
+This will test:
+- Card recommendations for dining, groceries, and gas
+- User and card retrieval
+- MCC code lookups
+- Summary endpoints
 
 ## Sample Data
 
@@ -160,25 +165,21 @@ Common merchant category codes:
 DUBHACKS/
 ├── backend/
 │   ├── main.py              # FastAPI application
-│   ├── database.py          # SQLAlchemy models
 │   ├── mcc_data.py          # MCC category mappings
 │   ├── scraper.py           # Bank of America web scraper
 │   ├── seed_data.py         # Database seeding script
 │   └── requirements.txt     # Python dependencies
 ├── frontend/
+│   ├── App.tsx             # Main React Native component
+│   ├── index.js            # React Native entry point
 │   ├── src/
-│   │   ├── App.js          # Main React component
-│   │   ├── App.css         # Styles
-│   │   └── index.js        # React entry point
-│   ├── public/
-│   │   └── index.html      # HTML template
+│   │   ├── navigation/     # Navigation setup
+│   │   ├── screens/        # App screens
+│   │   ├── components/     # Reusable components
+│   │   └── theme/          # Styling and theme
+│   ├── android/            # Android native code
 │   └── package.json        # Node dependencies
 └── README.md               # This file
-```
-
-## How It Works
-
-### 1. Recommendation Engine
 
 When you request a recommendation:
 
@@ -223,10 +224,11 @@ The scraper is configured to work with Bank of America's website. It includes:
 3. **Respectful delays** - 2-second delays between requests
 4. **Error handling** - Graceful failures with informative messages
 
-To test:
-1. Click "Run Scraper" in the Web Scraper tab
-2. Wait for completion (may take 10-20 seconds)
-3. View parsed results below
+To test via API:
+```bash
+curl -X POST http://localhost:8000/scraper/run
+curl http://localhost:8000/scraper/results
+```
 
 ## Future Enhancements
 
@@ -245,10 +247,12 @@ Based on the PRD, future phases could include:
 - Check if port 8000 is available
 - Run seed script first: `python seed_data.py`
 
-### Frontend won't start
+### Mobile app won't start
 - Install dependencies: `npm install`
-- Check if port 3000 is available
-- Make sure backend is running first
+- Make sure Metro bundler is running: `npm start`
+- Make sure Android emulator is running
+- Use `http://10.0.2.2:8000` for backend connection (NOT `localhost:8000`)
+- Clean build: `cd android && ./gradlew clean && cd ..`
 
 ### No recommendations returned
 - Verify you ran the seed script

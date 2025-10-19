@@ -11,6 +11,8 @@ import {
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import apiService from '../services/apiService';
+import { authStorage } from '../services/authStorage';
 
 const AddCardScreen = ({ navigateTo, onCardAdded }) => {
     const [formData, setFormData] = useState({
@@ -93,18 +95,45 @@ const AddCardScreen = ({ navigateTo, onCardAdded }) => {
 
         setLoading(true);
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Get logged-in user ID
+            const userId = authStorage.getUserId();
+            if (!userId) {
+                Alert.alert('Error', 'Please log in to add a card');
+                setLoading(false);
+                return;
+            }
 
-            // Create new card object
+            // Get card issuer from card number
+            const cardNumber = formData.cardNumber.replace(/\s/g, '');
+            const issuer = getCardIssuer(cardNumber);
+            const network = getCardType(cardNumber);
+            const lastFour = cardNumber.slice(-4);
+
+            // Format expiry date as MM/YY
+            const expiryDate = `${formData.expiryMonth}/${formData.expiryYear}`;
+
+            // Call backend API to add card
+            const response = await apiService.addCard(userId, {
+                issuer: issuer,
+                card_name: formData.cardName,
+                last_four: lastFour,
+                expiry_date: expiryDate,
+                cvv: formData.cvv,
+            });
+
+            console.log('Card added successfully:', response);
+
+            // Create card object for UI
             const newCard = {
-                id: Date.now().toString(),
+                id: response.id,
                 name: formData.cardName,
                 number: formData.cardNumber.replace(/\d(?=\d{4})/g, '*'),
                 expiry: `${formData.expiryMonth}/${formData.expiryYear}`,
                 image: '💳',
                 balance: '$0.00',
-                type: getCardType(formData.cardNumber.replace(/\s/g, ''))
+                type: network,
+                issuer: issuer,
+                last_four: lastFour,
             };
 
             // Call the callback to add the card
@@ -116,7 +145,8 @@ const AddCardScreen = ({ navigateTo, onCardAdded }) => {
                 { text: 'OK', onPress: () => navigateTo('Home') }
             ]);
         } catch (error) {
-            Alert.alert('Error', 'Failed to add credit card. Please try again.');
+            console.error('Error adding card:', error);
+            Alert.alert('Error', error.message || 'Failed to add credit card. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -127,6 +157,17 @@ const AddCardScreen = ({ navigateTo, onCardAdded }) => {
         if (cardNumber.startsWith('5')) return 'mastercard';
         if (cardNumber.startsWith('3')) return 'amex';
         return 'unknown';
+    };
+
+    const getCardIssuer = (cardNumber) => {
+        // Determine issuer based on card number patterns
+        if (cardNumber.startsWith('4')) return 'Visa';
+        if (cardNumber.startsWith('51') || cardNumber.startsWith('52') || 
+            cardNumber.startsWith('53') || cardNumber.startsWith('54') || 
+            cardNumber.startsWith('55')) return 'Mastercard';
+        if (cardNumber.startsWith('34') || cardNumber.startsWith('37')) return 'American Express';
+        if (cardNumber.startsWith('6011') || cardNumber.startsWith('65')) return 'Discover';
+        return 'Unknown';
     };
 
     return (

@@ -6,6 +6,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 import database
 import mcc_data
+import auth
 from scraper import BankOfAmericaScraper, RewardParser
 
 app = FastAPI(title="SmartCard API", version="1.0.0")
@@ -26,11 +27,23 @@ database.init_db()
 class UserCreate(BaseModel):
     email: str
     name: str
+    password: str
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    name: str
 
 class CardCreate(BaseModel):
     issuer: str
     card_name: str
     last_four: str
+    expiry_date: Optional[str] = None
+    cvv: Optional[str] = None
 
 class CardRuleCreate(BaseModel):
     category: str
@@ -94,14 +107,41 @@ def root():
         ]
     }
 
-@app.post("/users")
+@app.post("/users", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(database.get_db)):
-    """Create a new user"""
-    db_user = database.User(email=user.email, name=user.name)
+    """Create a new user (signup)"""
+    # Check if user already exists
+    existing_user = db.query(database.User).filter(database.User.email == user.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Hash the password
+    hashed_password = auth.hash_password(user.password)
+    
+    # Create new user
+    db_user = database.User(
+        email=user.email,
+        name=user.name,
+        hashed_password=hashed_password
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return {"id": db_user.id, "email": db_user.email, "name": db_user.name}
+    return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
+
+@app.post("/login", response_model=UserResponse)
+def login(user_login: UserLogin, db: Session = Depends(database.get_db)):
+    """Authenticate a user (login)"""
+    # Find user by email
+    db_user = db.query(database.User).filter(database.User.email == user_login.email).first()
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Verify password
+    if not auth.verify_password(user_login.password, db_user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
 
 @app.get("/users")
 def list_users(db: Session = Depends(database.get_db)):
@@ -120,7 +160,9 @@ def add_card(user_id: int, card: CardCreate, db: Session = Depends(database.get_
         user_id=user_id,
         issuer=card.issuer,
         card_name=card.card_name,
-        last_four=card.last_four
+        last_four=card.last_four,
+        expiry_date=card.expiry_date,
+        cvv=card.cvv
     )
     db.add(db_card)
     db.commit()
@@ -139,6 +181,7 @@ def get_user_cards(user_id: int, db: Session = Depends(database.get_db)):
             "issuer": card.issuer,
             "card_name": card.card_name,
             "last_four": card.last_four,
+            "expiry_date": card.expiry_date,
             "rules_count": len(rules)
         })
     return result
