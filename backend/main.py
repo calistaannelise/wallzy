@@ -34,6 +34,99 @@ def read_json():
     with open(json_path, "r") as f:
         return json.load(f)
 
+def get_random_merchant_name(category):
+    """Generate a random merchant name based on category"""
+    merchants = {
+        'dining': [
+            'The Cheesecake Factory',
+            'Olive Garden',
+            'Chipotle Mexican Grill',
+            'Panera Bread',
+            'Red Lobster',
+            'Buffalo Wild Wings',
+            'P.F. Chang\'s',
+            'Starbucks',
+            'Subway',
+            'McDonald\'s'
+        ],
+        'grocery': [
+            'Whole Foods Market',
+            'Trader Joe\'s',
+            'Safeway',
+            'Kroger',
+            'Costco',
+            'Target',
+            'Walmart Supercenter',
+            'Sprouts Farmers Market',
+            'QFC',
+            'Fred Meyer'
+        ],
+        'gas': [
+            'Shell',
+            'Chevron',
+            'BP',
+            '76',
+            'Arco',
+            'Exxon',
+            'Mobil',
+            'Texaco',
+            'Circle K',
+            'Costco Gas'
+        ],
+        'online_shopping': [
+            'Amazon.com',
+            'eBay',
+            'Etsy',
+            'Walmart.com',
+            'Target.com',
+            'Best Buy Online',
+            'Wayfair',
+            'Chewy',
+            'Zappos',
+            'Newegg'
+        ],
+        'travel': [
+            'Delta Airlines',
+            'United Airlines',
+            'American Airlines',
+            'Hilton Hotels',
+            'Marriott',
+            'Airbnb',
+            'Expedia',
+            'Uber',
+            'Lyft',
+            'Hertz Rent-A-Car'
+        ],
+        'entertainment': [
+            'AMC Theatres',
+            'Regal Cinemas',
+            'Netflix',
+            'Spotify',
+            'Apple Music',
+            'PlayStation Store',
+            'Xbox Store',
+            'Steam',
+            'Disney+',
+            'Hulu'
+        ],
+        'other': [
+            'CVS Pharmacy',
+            'Walgreens',
+            'Home Depot',
+            'Lowe\'s',
+            'Best Buy',
+            'Apple Store',
+            'AT&T',
+            'Verizon',
+            'T-Mobile',
+            'Amazon'
+        ]
+    }
+    
+    # Get merchant list for category, default to 'other' if not found
+    merchant_list = merchants.get(category, merchants['other'])
+    return random.choice(merchant_list)
+
 # Pydantic models
 class UserCreate(BaseModel):
     email: str
@@ -301,13 +394,16 @@ def recommend_card(db: Session = Depends(database.get_db)):
                 cashback = int((random_amount_cents * multiplier) / 100)
                 break
 
+        # Generate random merchant name based on category
+        merchant_name = get_random_merchant_name(category)
+        
         # Record transaction in database
         db_transaction = database.Transaction(
             user_id=user_id,
             card_id=random_card.id,
             amount_cents=random_amount_cents,
             mcc_code=data["mcc"],
-            merchant_name=None,
+            merchant_name=merchant_name,
             category=category,
             rewards=cashback,
             multiplier=multiplier,
@@ -388,13 +484,16 @@ def recommend_card(db: Session = Depends(database.get_db)):
    
     print("best card: " + best_card.card_name)
     
+    # Generate random merchant name based on category
+    merchant_name = get_random_merchant_name(category)
+    
     # Record transaction in database
     db_transaction = database.Transaction(
         user_id=user_id,
         card_id=best_card.id,
         amount_cents=random_amount_cents,
         mcc_code=data["mcc"],
-        merchant_name=None,
+        merchant_name=merchant_name,
         category=category,
         rewards=best_cashback,
         multiplier=best_multiplier,
