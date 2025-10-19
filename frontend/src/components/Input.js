@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   TextInput,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Animated,
 } from 'react-native';
+// import LinearGradient from 'react-native-linear-gradient';
 import { colors, typography, spacing } from '../theme';
 
 const Input = ({
@@ -23,6 +25,27 @@ const Input = ({
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const scaleAnimation = useRef(new Animated.Value(1)).current;
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    Animated.spring(scaleAnimation, {
+      toValue: 1.02,
+      tension: 100,
+      friction: 8,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    Animated.spring(scaleAnimation, {
+      toValue: 1,
+      tension: 100,
+      friction: 8,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const getInputContainerStyle = () => {
     const baseStyle = [styles.inputContainer];
@@ -45,17 +68,24 @@ const Input = ({
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View style={getInputContainerStyle()}>
+      <Animated.View
+        style={[
+          getInputContainerStyle(),
+          {
+            transform: [{ scale: scaleAnimation }],
+          }
+        ]}
+      >
         <TextInput
           style={[styles.input, inputStyle]}
           placeholder={placeholder}
-          placeholderTextColor={colors.inputPlaceholder}
+          placeholderTextColor={isFocused ? colors.textSecondary : colors.inputPlaceholder}
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...props}
         />
         {rightIcon && (
@@ -67,7 +97,7 @@ const Input = ({
             {rightIcon}
           </TouchableOpacity>
         )}
-      </View>
+      </Animated.View>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
@@ -78,44 +108,36 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   label: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold,
     color: colors.text,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
+    letterSpacing: 0.2,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.inputBackground,
-    borderWidth: 1,
-    borderColor: colors.inputBorder,
-    borderRadius: 12,
-    paddingHorizontal: spacing.md,
-    height: 56,
-    shadowColor: colors.text,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: 'transparent',
+    borderBottomWidth: 3,
+    borderBottomColor: colors.inputBorder,
+    paddingHorizontal: 0,
+    paddingVertical: spacing.sm,
+    height: 48,
   },
   inputContainerFocused: {
-    borderColor: colors.inputBorderFocused,
-    shadowColor: colors.primary,
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
+    borderBottomWidth: 4,
+    borderBottomColor: colors.primaryLight,
   },
   inputContainerError: {
-    borderColor: colors.error,
+    borderBottomColor: colors.error,
+    borderBottomWidth: 4,
   },
   input: {
     flex: 1,
     fontSize: typography.fontSize.base,
-    color: colors.text,
+    color: colors.text, // Light green text
     paddingVertical: 0,
+    lineHeight: typography.lineHeight.normal * typography.fontSize.base,
   },
   rightIcon: {
     padding: spacing.xs,

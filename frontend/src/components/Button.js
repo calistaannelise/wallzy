@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+// import LinearGradient from 'react-native-linear-gradient';
 import { colors, typography, spacing } from '../theme';
 
 const Button = ({
@@ -57,6 +58,26 @@ const Button = ({
     return baseStyle;
   };
 
+  if (variant === 'primary') {
+    return (
+      <TouchableOpacity
+        style={[styles.button, styles[size], styles[variant], style]}
+        onPress={onPress}
+        disabled={disabled || loading}
+        activeOpacity={0.8}
+      >
+        {loading ? (
+          <ActivityIndicator
+            color={colors.buttonPrimaryText}
+            size="small"
+          />
+        ) : (
+          <Text style={getTextStyle()}>{title}</Text>
+        )}
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       style={getButtonStyle()}
@@ -66,7 +87,7 @@ const Button = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'primary' ? colors.buttonPrimaryText : colors.text}
+          color={colors.text}
           size="small"
         />
       ) : (
@@ -83,6 +104,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
+  gradient: {
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    width: '100%',
+    height: '100%',
+  },
   large: {
     height: 56,
     paddingHorizontal: spacing.lg,
@@ -96,15 +125,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   primary: {
-    backgroundColor: colors.buttonPrimary,
-    shadowColor: colors.primary,
+    backgroundColor: colors.primary,
+    borderWidth: 0,
+    borderRadius: 8,
+    shadowColor: colors.primaryLight,
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 8,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.8,
+    shadowRadius: 20,
+    elevation: 15,
   },
   secondary: {
     backgroundColor: colors.buttonSecondary,
@@ -115,7 +146,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.buttonDisabled,
   },
   text: {
-    fontWeight: typography.fontWeight.semibold,
+    fontWeight: typography.fontWeight.bold,
+    letterSpacing: 0.5,
+    color: '#000000',
   },
   largeText: {
     fontSize: typography.fontSize.lg,

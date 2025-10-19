@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
+import PayButton from '../components/PayButton';
 import apiService from '../services/apiService';
 import { authStorage } from '../services/authStorage';
 
@@ -42,7 +43,7 @@ const HomeScreen = ({ navigateTo }) => {
                 return;
             }
             const cards = await apiService.getUserCards(userId);
-            
+
             // Transform API response to match UI format
             const transformedCards = cards.map(card => ({
                 id: card.id.toString(),
@@ -50,12 +51,11 @@ const HomeScreen = ({ navigateTo }) => {
                 number: `**** **** **** ${card.last_four}`,
                 expiry: card.expiry_date || '12/25', // Use expiry from API or fallback
                 image: '💳',
-                balance: '$0.00', // Mock balance since not in API
                 type: card.issuer ? card.issuer.toLowerCase() : 'unknown',
                 issuer: card.issuer,
                 last_four: card.last_four,
             }));
-            
+
             setCreditCards(transformedCards);
         } catch (err) {
             console.error('Error fetching cards:', err);
@@ -75,14 +75,14 @@ const HomeScreen = ({ navigateTo }) => {
                 setTransactionsLoading(false);
                 return;
             }
-            
+
             const txns = await apiService.getUserTransactions(userId, 10);
-            
+
             // Transform API response to match UI format
             const transformedTxns = txns.map(txn => {
                 const isExpense = txn.amount_cents > 0;
                 const amount = Math.abs(txn.amount_dollars);
-                
+
                 return {
                     id: txn.id.toString(),
                     title: txn.merchant_name || 'Transaction',
@@ -95,7 +95,7 @@ const HomeScreen = ({ navigateTo }) => {
                     rewards: txn.rewards > 0 ? `+${txn.rewards} points` : null
                 };
             });
-            
+
             setTransactions(transformedTxns);
         } catch (err) {
             console.error('Error fetching transactions:', err);
@@ -121,12 +121,12 @@ const HomeScreen = ({ navigateTo }) => {
 
     const formatTransactionDate = (dateString) => {
         if (!dateString) return 'Unknown date';
-        
+
         const txnDate = new Date(dateString);
         const now = new Date();
         const diffTime = Math.abs(now - txnDate);
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays === 0) return 'Today';
         if (diffDays === 1) return 'Yesterday';
         if (diffDays < 7) return `${diffDays} days ago`;
@@ -144,7 +144,6 @@ const HomeScreen = ({ navigateTo }) => {
                 <Text style={styles.cardNumber}>{item.number}</Text>
                 <View style={styles.cardFooter}>
                     <Text style={styles.cardExpiry}>{item.expiry}</Text>
-                    <Text style={styles.cardBalance}>{item.balance}</Text>
                 </View>
             </TouchableOpacity>
             <TouchableOpacity
@@ -230,13 +229,13 @@ const HomeScreen = ({ navigateTo }) => {
                         try {
                             // Call API to delete card from database
                             await apiService.deleteCard(cardId);
-                            
+
                             // Remove from UI
                             setCreditCards(prev => prev.filter(card => card.id !== cardId));
-                            
+
                             // Refresh transactions since they might be affected
                             fetchTransactions();
-                            
+
                             Alert.alert('Success', 'Card deleted successfully');
                         } catch (error) {
                             console.error('Error deleting card:', error);
@@ -297,6 +296,9 @@ const HomeScreen = ({ navigateTo }) => {
                         </TouchableOpacity>
                     )}
                 </View>
+
+                {/* Pay Button */}
+                <PayButton />
 
                 {/* Transaction History Section */}
                 <View style={styles.transactionSection}>
@@ -400,21 +402,31 @@ const styles = StyleSheet.create({
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
         borderRadius: 8,
-        backgroundColor: colors.surfaceVariant,
+        backgroundColor: colors.primary,
+        shadowColor: colors.primaryLight,
+        shadowOffset: {
+            width: 0,
+            height: 8,
+        },
+        shadowOpacity: 0.8,
+        shadowRadius: 20,
+        elevation: 15,
     },
     logoutText: {
-        color: colors.primary,
+        color: colors.buttonPrimaryText,
         fontSize: typography.fontSize.sm,
-        fontWeight: typography.fontWeight.medium,
+        fontWeight: typography.fontWeight.semibold,
+        letterSpacing: 0.3,
     },
     cardSection: {
         marginBottom: spacing['2xl'],
     },
     sectionTitle: {
-        fontSize: typography.fontSize.xl,
+        fontSize: typography.fontSize['2xl'],
         color: colors.text,
         fontWeight: typography.fontWeight.bold,
         marginBottom: spacing.lg,
+        letterSpacing: -0.3,
     },
     cardPlaceholder: {
         backgroundColor: colors.surface,
@@ -634,11 +646,6 @@ const styles = StyleSheet.create({
     cardExpiry: {
         fontSize: typography.fontSize.base,
         color: colors.textSecondary,
-    },
-    cardBalance: {
-        fontSize: typography.fontSize.lg,
-        color: colors.primary,
-        fontWeight: typography.fontWeight.bold,
     },
     modalActions: {
         padding: spacing.lg,
