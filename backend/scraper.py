@@ -182,13 +182,13 @@ class RewardParser:
             'dining': r'\b(dining|restaurants?|food)\b',
             'groceries': r'\b(grocery|groceries|supermarket)\b',
             'gas': r'\b(gas|fuel|gas stations?)\b',
-            'travel': r'\b(travel|hotels?|flights?|airlines?)\b',
+            # 'travel': r'\b(travel|hotels?|flights?|airlines?)\b',
             'online_shopping': r'\b(online shopping|online purchases?)\b',
             'drugstores': r'\b(drug stores?|pharmacy|pharmacies)\b',
             'entertainment': r'\b(entertainment|movies?|concerts?)\b',
-            'transit': r'\b(transit|transportation|subway|bus)\b',
+            # 'transit': r'\b(transit|transportation|subway|bus)\b',
             'streaming': r'\b(streaming|subscription)\b',
-            'other': r'\b(all other|everything else|other purchases?)\b'
+            'other': r'(all other|everything else|other purchases|all purchases|for all|on all|unlimited)'
         }
         
         for category, pattern in categories.items():

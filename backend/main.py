@@ -110,24 +110,35 @@ def root():
 @app.post("/users", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(database.get_db)):
     """Create a new user (signup)"""
-    # Check if user already exists
-    existing_user = db.query(database.User).filter(database.User.email == user.email).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Hash the password
-    hashed_password = auth.hash_password(user.password)
-    
-    # Create new user
-    db_user = database.User(
-        email=user.email,
-        name=user.name,
-        hashed_password=hashed_password
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
+    try:
+        # Check if user already exists
+        existing_user = db.query(database.User).filter(database.User.email == user.email).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Hash the password
+        hashed_password = auth.hash_password(user.password)
+        
+        # Create new user
+        db_user = database.User(
+            email=user.email,
+            name=user.name,
+            hashed_password=hashed_password
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return UserResponse(id=db_user.id, email=db_user.email, name=db_user.name)
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        # Log the error and return a proper JSON response
+        print(f"Error creating user: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Failed to create user: {str(e)}")
 
 @app.post("/login", response_model=UserResponse)
 def login(user_login: UserLogin, db: Session = Depends(database.get_db)):
