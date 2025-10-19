@@ -199,7 +199,8 @@ const styles = StyleSheet.create({
     payButtonText: {
         fontSize: typography.fontSize.lg,
         fontWeight: typography.fontWeight.bold,
-        color: colors.background,
+        color: colors.buttonPrimaryText,
+        letterSpacing: 0.5,
     },
 });
 

@@ -5,19 +5,20 @@ export const typography = {
     medium: 'System',
     bold: 'System',
   },
-  
-  // Font sizes
+
+  // Font sizes (improved hierarchy)
   fontSize: {
-    xs: 12,
-    sm: 14,
-    base: 16,
-    lg: 18,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 30,
-    '4xl': 36,
+    xs: 11,
+    sm: 13,
+    base: 15,
+    lg: 17,
+    xl: 19,
+    '2xl': 22,
+    '3xl': 26,
+    '4xl': 32,
+    '5xl': 40,
   },
-  
+
   // Font weights
   fontWeight: {
     normal: '400',
@@ -25,7 +26,7 @@ export const typography = {
     semibold: '600',
     bold: '700',
   },
-  
+
   // Line heights
   lineHeight: {
     tight: 1.2,

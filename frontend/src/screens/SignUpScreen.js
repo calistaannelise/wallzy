@@ -234,15 +234,19 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: {
-    fontSize: typography.fontSize['4xl'],
+    fontSize: typography.fontSize['5xl'],
     fontWeight: typography.fontWeight.bold,
     color: colors.text,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: typography.fontSize.lg,
     color: colors.textSecondary,
     textAlign: 'center',
+    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
+    marginBottom: spacing.lg,
   },
   form: {
     flex: 1,
@@ -257,8 +261,9 @@ const styles = StyleSheet.create({
     minWidth: 140,
   },
   signUpButton: {
-    marginTop: spacing.md,
+    marginTop: spacing.xl,
     marginBottom: spacing.lg,
+    alignSelf: 'stretch',
   },
   loginContainer: {
     flexDirection: 'row',
@@ -272,8 +277,8 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     fontSize: typography.fontSize.base,
-    color: colors.primary,
-    fontWeight: typography.fontWeight.semibold,
+    color: colors.accent,
+    fontWeight: typography.fontWeight.bold,
   },
 });
 

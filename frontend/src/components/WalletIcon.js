@@ -32,22 +32,22 @@ const styles = StyleSheet.create({
     mainCard: {
         width: 60,
         height: 38,
-        backgroundColor: '#FFFFFF', // White color
+        backgroundColor: '#FFFFFF', // White card background
         borderRadius: 8,
         position: 'relative',
-        shadowColor: '#000',
+        shadowColor: '#003333',
         shadowOffset: {
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 3,
     },
     secondaryCard: {
         width: 65,
         height: 40,
-        backgroundColor: '#F5F5F5', // Light gray for the card behind
+        backgroundColor: '#F0F0F0', // Light gray for secondary card
         borderRadius: 8,
         position: 'absolute',
         top: -3,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     wave: {
         position: 'absolute',
         borderWidth: 2,
-        borderColor: '#20B2AA', // Teal color for NFC waves
+        borderColor: '#003333', // Darkest teal for NFC waves
         borderRadius: 50,
     },
     wave1: {

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+// import LinearGradient from 'react-native-linear-gradient';
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
@@ -87,64 +88,68 @@ const LoginScreen = ({ navigateTo }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <WalletIcon size={60} />
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <WalletIcon size={60} />
+            </View>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>
+              Sign in to your Wallzy account
+            </Text>
           </View>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>
-            Sign in to your Wallzy account
-          </Text>
-        </View>
 
-        <View style={styles.form}>
-          <Input
-            label="Email Address"
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            error={errors.email}
-          />
+          <View style={styles.formBox}>
+            <View style={styles.form}>
+              <Input
+                label="Email Address"
+                placeholder="Enter your email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={errors.email}
+              />
 
-          <Input
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            error={errors.password}
-          />
+              <Input
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                error={errors.password}
+              />
 
-          <TouchableOpacity
-            style={styles.forgotPassword}
-            onPress={() => navigateTo('ForgotPassword')}
-          >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.forgotPassword}
+                onPress={() => navigateTo('ForgotPassword')}
+              >
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
 
-          <Button
-            title="Sign In"
-            onPress={handleLogin}
-            loading={loading}
-            style={styles.loginButton}
-          />
+              <Button
+                title="Sign In"
+                onPress={handleLogin}
+                loading={loading}
+                style={styles.loginButton}
+              />
 
-          <View style={styles.signUpContainer}>
-            <Text style={styles.signUpText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigateTo('SignUp')}>
-              <Text style={styles.signUpLink}>Sign Up</Text>
-            </TouchableOpacity>
+              <View style={styles.signUpContainer}>
+                <Text style={styles.signUpText}>Don't have an account? </Text>
+                <TouchableOpacity onPress={() => navigateTo('SignUp')}>
+                  <Text style={styles.signUpLink}>Sign Up</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 };
 
@@ -152,6 +157,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  safeArea: {
+    flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
@@ -166,15 +174,26 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: {
-    fontSize: typography.fontSize['4xl'],
+    fontSize: typography.fontSize['5xl'],
     fontWeight: typography.fontWeight.bold,
     color: colors.text,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    textAlign: 'center',
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: typography.fontSize.lg,
     color: colors.textSecondary,
     textAlign: 'center',
+    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
+    marginBottom: spacing.lg,
+  },
+  formBox: {
+    backgroundColor: colors.background,
+    borderRadius: 8,
+    padding: spacing.xl,
+    marginTop: spacing.xl,
+    marginBottom: spacing.lg,
   },
   form: {
     flex: 1,
@@ -185,11 +204,13 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: typography.fontSize.sm,
-    color: colors.primary,
-    fontWeight: typography.fontWeight.medium,
+    color: colors.accent,
+    fontWeight: typography.fontWeight.semibold,
   },
   loginButton: {
+    marginTop: spacing.xl,
     marginBottom: spacing.lg,
+    alignSelf: 'stretch',
   },
   signUpContainer: {
     flexDirection: 'row',
@@ -203,8 +224,8 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     fontSize: typography.fontSize.base,
-    color: colors.primary,
-    fontWeight: typography.fontWeight.semibold,
+    color: colors.accent,
+    fontWeight: typography.fontWeight.bold,
   },
 });
 
