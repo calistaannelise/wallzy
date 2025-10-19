@@ -146,7 +146,6 @@ The seed script creates a demo user with these cards:
 | **Blue Cash Preferred** (Amex) | Groceries | 6% |
 | **Customized Cash Rewards** (BofA) | Dining | 3% |
 | **Prime Visa** (Chase) | Online Shopping | 5% |
-| **Blue Cash Everyday** (Amex) | Gas | 3% |
 
 ## 🔌 API Endpoints
 
@@ -246,7 +245,7 @@ python3 seed_data.py  # Recreate with fresh data
 
 ## Credits
 
-Built for **DubHacks 2024** - Based on the SmartCard PRD
+Built for **DubHacks 2025** - Based on the SmartCard PRD
 
 **Team Members:**
 - George Evans
@@ -255,9 +254,7 @@ Built for **DubHacks 2024** - Based on the SmartCard PRD
 
 **Special Thanks:**
 - DubHacks organizers and mentors
-- React Native community
-- FastAPI community
 
 ---
 
-Made with ❤️ at DubHacks 2024
+Made with ❤️ at DubHacks 2025
