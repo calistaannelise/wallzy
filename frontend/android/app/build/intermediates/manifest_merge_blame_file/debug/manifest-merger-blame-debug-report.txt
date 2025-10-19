@@ -1,0 +1,112 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.fintechauthapp"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="33" />
+10
+11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+11-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/debug/AndroidManifest.xml:5:5-77
+11-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/debug/AndroidManifest.xml:5:22-75
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:3:5-67
+12-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:3:22-64
+13    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+13-->[com.facebook.flipper:flipper:0.182.0] /Users/pwijaya/.gradle/caches/transforms-3/13c6f661445fccbfed10ead17b456874/transformed/jetified-flipper-0.182.0/AndroidManifest.xml:16:5-76
+13-->[com.facebook.flipper:flipper:0.182.0] /Users/pwijaya/.gradle/caches/transforms-3/13c6f661445fccbfed10ead17b456874/transformed/jetified-flipper-0.182.0/AndroidManifest.xml:16:22-73
+14    <uses-permission android:name="android.permission.NFC" />
+14-->[:react-native-nfc-manager] /Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/node_modules/react-native-nfc-manager/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-62
+14-->[:react-native-nfc-manager] /Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/node_modules/react-native-nfc-manager/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:7:22-59
+15
+16    <uses-feature
+16-->[:react-native-nfc-manager] /Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/node_modules/react-native-nfc-manager/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-11:36
+17        android:name="android.hardware.nfc"
+17-->[:react-native-nfc-manager] /Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/node_modules/react-native-nfc-manager/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-44
+18        android:required="false" />
+18-->[:react-native-nfc-manager] /Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/node_modules/react-native-nfc-manager/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:9-33
+19
+20    <application
+20-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:5:5-24:19
+21        android:name="com.fintechauthapp.MainApplication"
+21-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:6:7-38
+22        android:allowBackup="false"
+22-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:10:7-34
+23        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+23-->[androidx.core:core:1.7.0] /Users/pwijaya/.gradle/caches/transforms-3/49d6042718c67dd8e768052b5e7dc5a6/transformed/core-1.7.0/AndroidManifest.xml:24:18-86
+24        android:debuggable="true"
+25        android:icon="@mipmap/ic_launcher"
+25-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:8:7-41
+26        android:label="@string/app_name"
+26-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:7:7-39
+27        android:roundIcon="@mipmap/ic_launcher_round"
+27-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:9:7-52
+28        android:theme="@style/AppTheme"
+28-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:11:7-38
+29        android:usesCleartextTraffic="true" >
+29-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/debug/AndroidManifest.xml:8:9-44
+30        <activity
+30-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/debug/AndroidManifest.xml:11:9-111
+31            android:name="com.facebook.react.devsupport.DevSettingsActivity"
+31-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/debug/AndroidManifest.xml:11:19-83
+32            android:exported="false" />
+32-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/debug/AndroidManifest.xml:11:84-108
+33        <activity
+33-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:12:7-23:18
+34            android:name="com.fintechauthapp.MainActivity"
+34-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:13:9-37
+35            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+35-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:15:9-118
+36            android:exported="true"
+36-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:18:9-32
+37            android:label="@string/app_name"
+37-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:14:9-41
+38            android:launchMode="singleTask"
+38-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:16:9-40
+39            android:windowSoftInputMode="adjustResize" >
+39-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:17:9-51
+40            <intent-filter>
+40-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:19:9-22:25
+41                <action android:name="android.intent.action.MAIN" />
+41-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:20:13-65
+41-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:20:21-62
+42
+43                <category android:name="android.intent.category.LAUNCHER" />
+43-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:21:13-73
+43-->/Users/pwijaya/Desktop/dubhacks7/wallzy/wallzy/frontend/android/app/src/main/AndroidManifest.xml:21:23-70
+44            </intent-filter>
+45        </activity>
+46
+47        <meta-data
+47-->[com.facebook.soloader:soloader:0.10.5] /Users/pwijaya/.gradle/caches/transforms-3/e087ba656e211adcebd35d98d04c49f5/transformed/jetified-soloader-0.10.5/AndroidManifest.xml:12:9-14:37
+48            android:name="com.facebook.soloader.enabled"
+48-->[com.facebook.soloader:soloader:0.10.5] /Users/pwijaya/.gradle/caches/transforms-3/e087ba656e211adcebd35d98d04c49f5/transformed/jetified-soloader-0.10.5/AndroidManifest.xml:13:13-57
+49            android:value="false" />
+49-->[com.facebook.soloader:soloader:0.10.5] /Users/pwijaya/.gradle/caches/transforms-3/e087ba656e211adcebd35d98d04c49f5/transformed/jetified-soloader-0.10.5/AndroidManifest.xml:14:13-34
+50
+51        <provider
+51-->[androidx.emoji2:emoji2:1.0.0] /Users/pwijaya/.gradle/caches/transforms-3/72b062fa660818c4583df8117d194b20/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:26:9-34:20
+52            android:name="androidx.startup.InitializationProvider"
+52-->[androidx.emoji2:emoji2:1.0.0] /Users/pwijaya/.gradle/caches/transforms-3/72b062fa660818c4583df8117d194b20/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:27:13-67
+53            android:authorities="com.fintechauthapp.androidx-startup"
+53-->[androidx.emoji2:emoji2:1.0.0] /Users/pwijaya/.gradle/caches/transforms-3/72b062fa660818c4583df8117d194b20/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:28:13-68
+54            android:exported="false" >
+54-->[androidx.emoji2:emoji2:1.0.0] /Users/pwijaya/.gradle/caches/transforms-3/72b062fa660818c4583df8117d194b20/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:29:13-37
+55            <meta-data
+55-->[androidx.emoji2:emoji2:1.0.0] /Users/pwijaya/.gradle/caches/transforms-3/72b062fa660818c4583df8117d194b20/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:31:13-33:52
+56                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+56-->[androidx.emoji2:emoji2:1.0.0] /Users/pwijaya/.gradle/caches/transforms-3/72b062fa660818c4583df8117d194b20/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:32:17-75
+57                android:value="androidx.startup" />
+57-->[androidx.emoji2:emoji2:1.0.0] /Users/pwijaya/.gradle/caches/transforms-3/72b062fa660818c4583df8117d194b20/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:33:17-49
+58            <meta-data
+58-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/pwijaya/.gradle/caches/transforms-3/bbb03614500be5ae613690de9b57787a/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:31:13-33:52
+59                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+59-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/pwijaya/.gradle/caches/transforms-3/bbb03614500be5ae613690de9b57787a/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:32:17-78
+60                android:value="androidx.startup" />
+60-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/pwijaya/.gradle/caches/transforms-3/bbb03614500be5ae613690de9b57787a/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:33:17-49
+61        </provider>
+62    </application>
+63
+64</manifest>

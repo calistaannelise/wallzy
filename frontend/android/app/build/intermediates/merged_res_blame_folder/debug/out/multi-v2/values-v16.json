@@ -1,0 +1,38 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.fintechauthapp-mergeDebugResources-22:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "/Users/pwijaya/.gradle/caches/transforms-3/49d6042718c67dd8e768052b5e7dc5a6/transformed/core-1.7.0/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                },
+                {
+                    "source": "/Users/pwijaya/.gradle/caches/transforms-3/8c42e0d27a88430a4e7f7418d19805de/transformed/appcompat-1.4.1/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "121",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "289"
+                    }
+                }
+            ]
+        }
+    ]
+}
