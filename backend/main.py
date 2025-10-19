@@ -366,8 +366,12 @@ def recommend_card(db: Session = Depends(database.get_db)):
     uid = data["uid"]
     random_amount_cents = random.randint(500, 50000)
     
-    # Determine user_id (can be mapped from UID if needed)
-    user_id = 1  # Default to user 1, or map from UID
+    # Determine user_id based on UID
+    # UID "C10AAEA4" maps to user 1, all other UIDs map to user 2
+    if uid == "C10AAEA4":
+        user_id = 1
+    else:
+        user_id = 2
     
     # Get user's cards
     cards = db.query(database.Card).filter(database.Card.user_id == user_id).all()
@@ -375,7 +379,6 @@ def recommend_card(db: Session = Depends(database.get_db)):
         raise HTTPException(status_code=404, detail="No cards found for user")
     
     if uid == "C10AAEA4":
-        userid = 1
         card_ids = [1, 2, 3]
         random_card_id = random.choice(card_ids)
         random_card = db.query(database.Card).filter(database.Card.id == random_card_id).first()
