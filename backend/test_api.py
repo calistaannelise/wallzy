@@ -21,7 +21,7 @@ def test_api():
             return
     except Exception as e:
         print(f"   ❌ Cannot connect to server: {e}")
-        print("   Make sure to run 'python main.py' first!")
+        print("   Make sure to run 'python3 main.py' first!")
         return
     
     # Test 2: List users

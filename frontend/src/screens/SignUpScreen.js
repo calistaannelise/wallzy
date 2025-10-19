@@ -11,6 +11,7 @@ import {
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import { authStorage } from '../services/authStorage';
 
 const SignUpScreen = ({ navigateTo }) => {
   const [formData, setFormData] = useState({
@@ -92,8 +93,15 @@ const SignUpScreen = ({ navigateTo }) => {
       const data = await response.json();
   
       if (response.ok) {
+        // Store user data and auto-login
+        authStorage.setUser({
+          id: data.id,
+          email: data.email,
+          name: data.name,
+        });
+        
         Alert.alert('Success', 'Account created successfully!', [
-          { text: 'OK', onPress: () => navigateTo('Login') }
+          { text: 'OK', onPress: () => navigateTo('Home') }
         ]);
       } else {
         Alert.alert('Error', data.detail || 'Sign up failed. Please try again.');

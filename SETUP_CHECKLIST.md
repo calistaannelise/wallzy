@@ -19,6 +19,10 @@ Before starting, verify you have:
   npm --version
   ```
 
+- [ ] **Android Studio** with Android Emulator installed
+  - Android SDK installed
+  - At least one Android Virtual Device (AVD) configured
+
 ## Installation Steps
 
 ### Step 1: Backend Setup ⚙️
@@ -61,7 +65,7 @@ cd backend
   ✅ All tests completed!
   ```
 
-### Step 2: Frontend Setup 🎨
+### Step 2: Frontend Setup 🎨 (React Native Mobile App)
 
 ```bash
 cd ../frontend
@@ -74,29 +78,37 @@ cd ../frontend
   
   **Expected:** No errors, packages installed
 
+- [ ] Verify Android setup
+  ```bash
+  # Check if Android SDK is accessible
+  echo $ANDROID_HOME
+  # Should show path like: /Users/YOUR_USERNAME/Library/Android/sdk
+  ```
+
 ### Step 3: Start the Application 🚀
 
-**Option A: Automated (Recommended)**
+**You need 3 terminals for React Native:**
 
-```bash
-cd ..
-chmod +x start.sh
-./start.sh
-```
-
-**Option B: Manual (Two Terminals)**
-
-Terminal 1 - Backend:
+**Terminal 1 - Backend:**
 ```bash
 cd backend
-python main.py
+python3 main.py
 ```
 
-Terminal 2 - Frontend:
+**Terminal 2 - Metro Bundler:**
 ```bash
 cd frontend
 npm start
 ```
+
+**Terminal 3 - Run App on Android Emulator:**
+
+```bash
+cd frontend
+npm run android
+```
+
+**Note:** Make sure your Android Emulator is running before executing this command. You can start it from Android Studio or use `emulator -avd YOUR_AVD_NAME`
 
 ## Verification Checklist
 
@@ -109,34 +121,29 @@ npm start
 
 ### Frontend Verification ✅
 
-- [ ] Frontend opens at http://localhost:3000
-- [ ] See "SmartCard MVP" header with purple gradient
-- [ ] Three tabs visible: "Recommend Card", "My Cards", "Web Scraper"
-- [ ] No console errors in browser DevTools
+- [ ] Metro bundler running on http://localhost:8081
+- [ ] App opens in Android Emulator
+- [ ] See authentication/login screen
+- [ ] App connects to backend at http://10.0.2.2:8000 (Android emulator special address)
+- [ ] No errors in Metro bundler console
 
 ### Feature Testing ✅
 
-#### Test 1: Card Recommendation
-- [ ] Go to "Recommend Card" tab
-- [ ] Select "5812 - Dining/Restaurants"
-- [ ] Enter "$50.00"
-- [ ] Click "Get Recommendation"
-- [ ] Should see: **Citi Custom Cash (5%) = $2.50**
+#### Test 1: Android App Launch
+- [ ] App launches successfully in Android emulator
+- [ ] Authentication screen displays correctly
+- [ ] Can navigate through app screens
+- [ ] Backend API calls work from mobile app (using http://10.0.2.2:8000)
 
-#### Test 2: View Cards
-- [ ] Go to "My Cards" tab
-- [ ] Should see 4 cards:
-  - [ ] Bank of America Customized Cash Rewards
-  - [ ] Chase Freedom Unlimited
-  - [ ] Citi Custom Cash
-  - [ ] American Express Blue Cash Preferred
-
-#### Test 3: Web Scraper
-- [ ] Go to "Web Scraper" tab
-- [ ] Click "Run Scraper"
-- [ ] Wait 10-20 seconds
-- [ ] Should see scraped Bank of America rewards
-- [ ] Each result shows raw text and parsed data
+#### Test 2: Backend API (Use test_api.py)
+- [ ] Run `python3 test_api.py` in backend directory
+- [ ] All 6 tests pass:
+  - [ ] Server connection
+  - [ ] User list retrieval
+  - [ ] Card retrieval (4 cards)
+  - [ ] MCC lookup
+  - [ ] Card recommendations
+  - [ ] User summary
 
 ### API Testing ✅
 
@@ -165,11 +172,22 @@ Expected tests to pass:
 lsof -ti:8000 | xargs kill -9
 ```
 
-### Issue: Port 3000 already in use
+### Issue: Port 8081 already in use (Metro bundler)
 **Solution:**
 ```bash
-# Use a different port
-PORT=3001 npm start
+# Kill the Metro bundler process
+lsof -ti:8081 | xargs kill -9
+# Then restart
+npm start
+```
+
+### Issue: Android build fails
+**Solution:**
+```bash
+cd android
+./gradlew clean
+cd ..
+npm run android
 ```
 
 ### Issue: Module not found (Python)
@@ -193,17 +211,21 @@ cd backend
 python seed_data.py
 ```
 
-### Issue: CORS errors in browser
+### Issue: Cannot connect to backend from Android emulator
 **Solution:**
-- Make sure backend is running first
+- Android Emulator must use `http://10.0.2.2:8000` (NOT localhost)
+- Make sure backend is running first on port 8000
 - Check backend console for errors
-- Verify backend URL in frontend/src/App.js (line 5)
+- Verify firewall isn't blocking the connection
 
-### Issue: Scraper returns no results
+### Issue: Metro bundler won't start
 **Solution:**
-- This is expected! Bank websites often block scrapers
-- The scraper includes fallback data for demonstration
-- Check the console for error messages
+```bash
+cd frontend
+rm -rf node_modules
+npm install
+npx react-native start --reset-cache
+```
 
 ## File Structure Verification
 
@@ -228,13 +250,14 @@ DUBHACKS/
 │   └── ✅ requirements.txt
 └── frontend/
     ├── ✅ package.json
-    ├── public/
-    │   └── ✅ index.html
+    ├── ✅ App.tsx
+    ├── ✅ index.js
+    ├── android/          # Android native code
     └── src/
-        ├── ✅ App.js
-        ├── ✅ App.css
-        ├── ✅ index.js
-        └── ✅ index.css
+        ├── ✅ navigation/
+        ├── ✅ screens/
+        ├── ✅ components/
+        └── ✅ theme/
 ```
 
 ## Quick Test Commands
@@ -242,7 +265,7 @@ DUBHACKS/
 ### Test Backend Only
 ```bash
 cd backend
-python main.py &
+python3 main.py &
 sleep 2
 curl http://localhost:8000
 curl http://localhost:8000/users
@@ -266,24 +289,23 @@ curl http://localhost:8000/scraper/results
 
 You're ready to demo when:
 
-- [x] Backend starts without errors
-- [x] Frontend loads in browser
-- [x] Can get card recommendations
-- [x] Can view all 4 sample cards
-- [x] Can run web scraper
-- [x] API test script passes all tests
-- [x] No console errors in browser
-- [x] Swagger docs accessible
+- [ ] Backend starts without errors on http://localhost:8000
+- [ ] Metro bundler runs without errors on http://localhost:8081
+- [ ] Android app launches in Android Emulator
+- [ ] App can communicate with backend API at http://10.0.2.2:8000
+- [ ] API test script passes all tests (`python3 test_api.py`)
+- [ ] No errors in Metro bundler console
+- [ ] Swagger docs accessible at http://localhost:8000/docs
 
 ## Next Steps
 
 Once everything is working:
 
 1. **Explore the API Docs**: http://localhost:8000/docs
-2. **Try Different MCC Codes**: Test various merchant categories
-3. **Review the Code**: Check out the implementation details
-4. **Customize**: Add your own credit cards and rules
-5. **Extend**: Implement Phase 2 features from the PRD
+2. **Test on Real Android Device**: Connect your phone via USB, enable USB debugging, and run `npm run android`
+3. **Review the Code**: Check out the React Native implementation
+4. **Customize**: Add your own credit cards and rules to the backend
+5. **Extend**: Add more mobile screens and features
 
 ## Support
 
@@ -300,36 +322,36 @@ If you encounter issues:
 For presenting the project:
 
 1. **Introduction** (30 seconds)
-   - "SmartCard automatically recommends the best credit card for each purchase"
+   - "SmartCard is an Android mobile app that automatically recommends the best credit card for each purchase"
 
-2. **Show Recommendation** (1 minute)
-   - Open frontend
-   - Select dining, enter $50
-   - Show Citi Custom Cash with 5% = $2.50
+2. **Show Mobile App** (1 minute)
+   - Launch app in Android Emulator
+   - Navigate through authentication screens
+   - Show mobile UI and user experience
 
-3. **Show Card Portfolio** (30 seconds)
-   - Switch to "My Cards" tab
-   - Show 4 different cards with different rewards
-
-4. **Show Web Scraper** (1 minute)
-   - Switch to "Web Scraper" tab
-   - Click "Run Scraper"
-   - Show parsed Bank of America rewards
-
-5. **Show API** (30 seconds)
+3. **Show Backend API** (1 minute)
    - Open http://localhost:8000/docs
    - Show interactive API documentation
+   - Demonstrate card recommendation endpoint
 
-6. **Explain Architecture** (1 minute)
+4. **Run API Tests** (1 minute)
+   - Run `python3 test_api.py`
+   - Show all 6 tests passing
+   - Explain card recommendation logic
+
+5. **Explain Architecture** (1 minute)
    - FastAPI backend with SQLite
-   - React frontend
-   - Web scraper with BeautifulSoup
+   - React Native Android mobile frontend
    - Dynamic reward rules with date validation
+   - Real-time card recommendations
 
 Total: ~4 minutes
 
 ---
 
-**Ready to start?** Run: `./start.sh`
+**Ready to start?** 
+1. Terminal 1: `cd backend && python3 main.py`
+2. Terminal 2: `cd frontend && npm start`
+3. Terminal 3: `cd frontend && npm run android`
 
 **Need help?** Check: `README.md` or `QUICKSTART.md`

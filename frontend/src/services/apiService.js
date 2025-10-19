@@ -57,7 +57,8 @@ class ApiService {
       issuer: cardData.issuer,
       card_name: cardData.card_name,
       last_four: cardData.last_four,
-      network: cardData.network || 'unknown',
+      expiry_date: cardData.expiry_date || null,
+      cvv: cardData.cvv || null,
     };
 
     return this.request(API_ENDPOINTS.ADD_CARD(userId), {

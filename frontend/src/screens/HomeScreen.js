@@ -10,11 +10,12 @@ import {
     FlatList,
     Image,
     ActivityIndicator,
+    Alert,
 } from 'react-native';
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import apiService from '../services/apiService';
-import { DEFAULT_USER_ID } from '../config/api';
+import { authStorage } from '../services/authStorage';
 
 const HomeScreen = ({ navigateTo }) => {
     const [showCardList, setShowCardList] = useState(false);
@@ -31,17 +32,23 @@ const HomeScreen = ({ navigateTo }) => {
         try {
             setLoading(true);
             setError(null);
-            const cards = await apiService.getUserCards(DEFAULT_USER_ID);
+            const userId = authStorage.getUserId();
+            if (!userId) {
+                setError('Please log in to view your cards');
+                setLoading(false);
+                return;
+            }
+            const cards = await apiService.getUserCards(userId);
             
             // Transform API response to match UI format
             const transformedCards = cards.map(card => ({
                 id: card.id.toString(),
                 name: card.card_name,
                 number: `**** **** **** ${card.last_four}`,
-                expiry: '12/25', // Mock expiry since not in API
+                expiry: card.expiry_date || '12/25', // Use expiry from API or fallback
                 image: '💳',
                 balance: '$0.00', // Mock balance since not in API
-                type: card.network.toLowerCase(),
+                type: card.issuer ? card.issuer.toLowerCase() : 'unknown',
                 issuer: card.issuer,
                 last_four: card.last_four,
             }));
@@ -189,6 +196,7 @@ const HomeScreen = ({ navigateTo }) => {
     };
 
     const handleLogout = () => {
+        authStorage.clearUser();
         navigateTo('Login');
     };
 
@@ -229,7 +237,7 @@ const HomeScreen = ({ navigateTo }) => {
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.greeting}>{getGreeting()}</Text>
-                        <Text style={styles.userName}>John Doe</Text>
+                        <Text style={styles.userName}>{authStorage.getUser()?.name || 'User'}</Text>
                     </View>
                     <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
                         <Text style={styles.logoutText}>Logout</Text>

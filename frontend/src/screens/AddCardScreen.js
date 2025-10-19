@@ -12,7 +12,7 @@ import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import apiService from '../services/apiService';
-import { DEFAULT_USER_ID } from '../config/api';
+import { authStorage } from '../services/authStorage';
 
 const AddCardScreen = ({ navigateTo, onCardAdded }) => {
     const [formData, setFormData] = useState({
@@ -95,18 +95,30 @@ const AddCardScreen = ({ navigateTo, onCardAdded }) => {
 
         setLoading(true);
         try {
+            // Get logged-in user ID
+            const userId = authStorage.getUserId();
+            if (!userId) {
+                Alert.alert('Error', 'Please log in to add a card');
+                setLoading(false);
+                return;
+            }
+
             // Get card issuer from card number
             const cardNumber = formData.cardNumber.replace(/\s/g, '');
             const issuer = getCardIssuer(cardNumber);
             const network = getCardType(cardNumber);
             const lastFour = cardNumber.slice(-4);
 
+            // Format expiry date as MM/YY
+            const expiryDate = `${formData.expiryMonth}/${formData.expiryYear}`;
+
             // Call backend API to add card
-            const response = await apiService.addCard(DEFAULT_USER_ID, {
+            const response = await apiService.addCard(userId, {
                 issuer: issuer,
                 card_name: formData.cardName,
                 last_four: lastFour,
-                network: network,
+                expiry_date: expiryDate,
+                cvv: formData.cvv,
             });
 
             console.log('Card added successfully:', response);

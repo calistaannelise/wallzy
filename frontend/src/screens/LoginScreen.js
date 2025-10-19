@@ -11,6 +11,7 @@ import {
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import { authStorage } from '../services/authStorage';
 
 const LoginScreen = ({ navigateTo }) => {
   const [email, setEmail] = useState('');
@@ -63,7 +64,13 @@ const LoginScreen = ({ navigateTo }) => {
       const data = await response.json();
 
       if (response.ok) {
-        // Store user data for later use (you might want to use AsyncStorage here)
+        // Store user data in auth storage
+        authStorage.setUser({
+          id: data.id,
+          email: data.email,
+          name: data.name,
+        });
+        
         Alert.alert('Success', `Welcome back, ${data.name}!`, [
           { text: 'OK', onPress: () => navigateTo('Home') }
         ]);
