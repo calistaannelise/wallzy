@@ -13,7 +13,7 @@ DEVICE_NAME  = "ESP32 Server"
 SERVICE_UUID = "275dc6e0-dff5-4b56-9af0-584a5768a02a"
 CHAR_UUID    = "9b2a6a1f-4f8a-4c67-9d2a-62b3c1a8e0ff"
 
-JSON_PATH = Path(os.getenv("HELLO_JSON", "~/Desktop/hello.json")).expanduser().resolve()
+JSON_PATH = Path(os.getenv("HELLO_JSON", "~/Desktop/dubhacksv5/firmware/hello.json")).expanduser().resolve()
 
 MCC_BY_CATEGORY = {
     "grocery": "5411",   # Grocery
