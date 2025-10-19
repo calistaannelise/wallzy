@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -9,41 +9,53 @@ import {
     Modal,
     FlatList,
     Image,
+    ActivityIndicator,
 } from 'react-native';
 import { colors, typography, spacing } from '../theme';
 import Button from '../components/Button';
+import apiService from '../services/apiService';
+import { DEFAULT_USER_ID } from '../config/api';
 
 const HomeScreen = ({ navigateTo }) => {
     const [showCardList, setShowCardList] = useState(false);
-    const [creditCards, setCreditCards] = useState([
-        {
-            id: '1',
-            name: 'Visa Classic',
-            number: '**** **** **** 1234',
-            expiry: '12/25',
-            image: '💳',
-            balance: '$2,450.00',
-            type: 'visa'
-        },
-        {
-            id: '2',
-            name: 'Mastercard Gold',
-            number: '**** **** **** 5678',
-            expiry: '08/26',
-            image: '💳',
-            balance: '$5,230.50',
-            type: 'mastercard'
-        },
-        {
-            id: '3',
-            name: 'American Express',
-            number: '**** ****** 9012',
-            expiry: '03/27',
-            image: '💳',
-            balance: '$1,890.75',
-            type: 'amex'
+    const [creditCards, setCreditCards] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch cards from API on mount
+    useEffect(() => {
+        fetchCards();
+    }, []);
+
+    const fetchCards = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const cards = await apiService.getUserCards(DEFAULT_USER_ID);
+            
+            // Transform API response to match UI format
+            const transformedCards = cards.map(card => ({
+                id: card.id.toString(),
+                name: card.card_name,
+                number: `**** **** **** ${card.last_four}`,
+                expiry: '12/25', // Mock expiry since not in API
+                image: '💳',
+                balance: '$0.00', // Mock balance since not in API
+                type: card.network.toLowerCase(),
+                issuer: card.issuer,
+                last_four: card.last_four,
+            }));
+            
+            setCreditCards(transformedCards);
+        } catch (err) {
+            console.error('Error fetching cards:', err);
+            setError(err.message);
+            // Keep empty array on error
+            setCreditCards([]);
+        } finally {
+            setLoading(false);
         }
-    ]);
+    };
 
     // Mock transaction history
     const transactions = [
@@ -182,6 +194,8 @@ const HomeScreen = ({ navigateTo }) => {
 
     const handleAddCard = (newCard) => {
         setCreditCards(prev => [...prev, newCard]);
+        // Refresh cards from API to get latest data
+        fetchCards();
     };
 
     const handleRemoveCard = (cardId) => {
@@ -225,14 +239,30 @@ const HomeScreen = ({ navigateTo }) => {
                 {/* Credit Card Section */}
                 <View style={styles.cardSection}>
                     <Text style={styles.sectionTitle}>Your Cards</Text>
-                    <TouchableOpacity
-                        style={styles.cardPlaceholder}
-                        onPress={() => setShowCardList(true)}
-                    >
-                        <Text style={styles.cardPlaceholderIcon}>💳</Text>
-                        <Text style={styles.cardPlaceholderText}>Tap to view all cards</Text>
-                        <Text style={styles.cardPlaceholderSubtext}>{creditCards.length} cards available</Text>
-                    </TouchableOpacity>
+                    {loading ? (
+                        <View style={styles.cardPlaceholder}>
+                            <ActivityIndicator size="large" color={colors.primary} />
+                            <Text style={styles.cardPlaceholderSubtext}>Loading cards...</Text>
+                        </View>
+                    ) : error ? (
+                        <TouchableOpacity
+                            style={styles.cardPlaceholder}
+                            onPress={fetchCards}
+                        >
+                            <Text style={styles.cardPlaceholderIcon}>⚠️</Text>
+                            <Text style={styles.cardPlaceholderText}>Failed to load cards</Text>
+                            <Text style={styles.cardPlaceholderSubtext}>Tap to retry</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.cardPlaceholder}
+                            onPress={() => setShowCardList(true)}
+                        >
+                            <Text style={styles.cardPlaceholderIcon}>💳</Text>
+                            <Text style={styles.cardPlaceholderText}>Tap to view all cards</Text>
+                            <Text style={styles.cardPlaceholderSubtext}>{creditCards.length} cards available</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Transaction History Section */}
