@@ -67,21 +67,45 @@ const SignUpScreen = ({ navigateTo }) => {
 
   const handleSignUp = async () => {
     if (!validateForm()) return;
-
     setLoading(true);
+  
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      Alert.alert('Success', 'Account created successfully!', [
-        { text: 'OK', onPress: () => navigateTo('Login') }
-      ]);
+      const payload = {
+        email: formData.email,
+        name: `${formData.firstName} ${formData.lastName}`,
+        password: formData.password,
+      };
+  
+      // For Android emulator → 10.0.2.2
+      // For iOS simulator → 127.0.0.1
+      // For physical device → your computer's LAN IP (e.g. 192.168.x.x)
+      const API_URL = "http://10.0.2.2:8000/users";
+  
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Alert.alert('Success', 'Account created successfully!', [
+          { text: 'OK', onPress: () => navigateTo('Login') }
+        ]);
+      } else {
+        Alert.alert('Error', data.detail || 'Sign up failed. Please try again.');
+      }
     } catch (error) {
-      Alert.alert('Error', 'Sign up failed. Please try again.');
+      console.error("Signup error:", error);
+      Alert.alert('Error', 'Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   const updateFormData = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));

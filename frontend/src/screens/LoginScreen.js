@@ -42,15 +42,37 @@ const LoginScreen = ({ navigateTo }) => {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const payload = {
+        email: email,
+        password: password,
+      };
 
-      // For demo purposes, accept any valid email/password
-      Alert.alert('Success', 'Login successful!', [
-        { text: 'OK', onPress: () => navigateTo('Home') }
-      ]);
+      // For Android emulator → 10.0.2.2
+      // For iOS simulator → 127.0.0.1
+      // For physical device → your computer's LAN IP (e.g. 192.168.x.x)
+      const API_URL = "http://10.0.2.2:8000/login";
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user data for later use (you might want to use AsyncStorage here)
+        Alert.alert('Success', `Welcome back, ${data.name}!`, [
+          { text: 'OK', onPress: () => navigateTo('Home') }
+        ]);
+      } else {
+        Alert.alert('Error', data.detail || 'Invalid email or password.');
+      }
     } catch (error) {
-      Alert.alert('Error', 'Login failed. Please try again.');
+      console.error("Login error:", error);
+      Alert.alert('Error', 'Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
