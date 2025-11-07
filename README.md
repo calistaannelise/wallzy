@@ -1,8 +1,8 @@
-# 💳 Wallzy - Smart Credit Card Optimizer
+# Wallzy - Smart Credit Card Optimizer
 
-An intelligent credit card recommendation system that automatically suggests the best card for each purchase based on merchant categories and reward multipliers. Built with NFC/RFID tap functionality for seamless real-world usage.
+An intelligent credit card recommendation app that automatically suggests the best credit card for each purchase based on merchant categories and reward multipliers. Built with NFC/RFID tap functionality for seamless real-world usage.
 
-## 📋 Table of Contents
+# Contents
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
@@ -10,32 +10,32 @@ An intelligent credit card recommendation system that automatically suggests the
 - [Usage](#-usage)
 - [API Endpoints](#-api-endpoints)
 - [Project Structure](#-project-structure)
-- [How It Works](#-how-it-works)
+- [Workflow](#-how-it-works)
 - [Troubleshooting](#-troubleshooting)
 - [Credits](#credits)
 
-## ✨ Features
+# Features
 
-- 🎯 **Smart Card Recommendations** - Automatically recommends the best card based on merchant category
-- 💰 **Real-time Cashback Calculation** - Shows exact cashback earned on each transaction
-- 📱 **NFC/RFID Integration** - Tap your card to get instant recommendations
-- 🏪 **Merchant Recognition** - Identifies merchants and categorizes transactions
-- 📊 **Transaction History** - Track all purchases with detailed cashback information
-- 🔐 **Secure Authentication** - User signup/login with encrypted passwords
-- 🎨 **Modern UI** - Beautiful React Native interface with real-time updates
+- Smart Card Recommendations: Automatically recommends the best card based on merchant category
+- Real-time Cashback Calculation: Shows exact cashback earned on each transaction
+- NFC/RFID Integration: Tap your card during payment to get instant recommendations
+- Merchant Recognition: Identifies merchants and categorizes transactions
+- Transaction History: Track all purchases with detailed cashback information
+- Secure Authentication: User signup/login with encrypted passwords
+- Modern UI: Beautiful React Native interface with real-time updates
 
-## 🛠 Tech Stack
-- **Firmware**: FreeRTOS
-- **Backend**: FastAPI (Python 3.13)
-- **Database**: SQLite with SQLAlchemy ORM
-- **Frontend**: React Native (Android)
-- **Hardware**: ESP32 with RFID-RC522 module
-- **Authentication**: bcrypt password hashing
-- **API**: RESTful with automatic OpenAPI documentation
+# Tech Stack
+- Firmware: FreeRTOS
+- Backend: FastAPI (Python 3.13)
+- Database: SQLite with SQLAlchemy ORM
+- Frontend: React Native (Android)
+- Hardware: ESP32 with RFID-RC522 module
+- Authentication: bcrypt password hashing
+- API: RESTful with automatic OpenAPI documentation
 
-## 🚀 Quick Start
+## Quick Start
 
-### Prerequisites
+### Requirements
 
 - Python 3.8+
 - Node.js 16+
@@ -60,7 +60,7 @@ This will:
 4. Start the backend server
 5. Start Metro bundler
 
-Then in a **new terminal**:
+Then in a new terminal:
 ```bash
 cd frontend
 npm run android
@@ -104,7 +104,7 @@ cd frontend
 npx react-native run-android
 ```
 
-### 📱 Running on Physical Device
+### Running on Physical Device
 
 If using a physical Android device, update the IP address in:
 - `frontend/src/config/api.js` (line 11)
@@ -115,7 +115,7 @@ Replace `COMPUTER_IP` with your computer's local IP address (find it with `ifcon
 
 **Important**: Your phone and computer must be on the same Wi-Fi network!
 
-## 📖 Usage
+## Usage
 
 ### 1. Sign Up / Login
 - Create an account with email and password
@@ -137,7 +137,7 @@ Replace `COMPUTER_IP` with your computer's local IP address (find it with `ifcon
 - View merchant name, amount spent, and cashback earned
 - Compare rewards across different cards
 
-## 💳 Sample Credit Cards
+## Sample Credit Cards
 
 The seed script creates a demo user with these cards:
 
@@ -182,7 +182,7 @@ Common merchant category codes:
 - **4111** - Transit
 - **4899** - Streaming Services
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 dubhacksv5/
@@ -206,7 +206,7 @@ dubhacksv5/
 └── start.sh                # Automated startup script
 ```
 
-## 🎯 How It Works
+## Workflow
 
 1. **Card Tap**: User taps RFID card on ESP32 reader
 2. **Data Transfer**: ESP32 sends MCC code via BLE to `hello.json`
@@ -214,7 +214,7 @@ dubhacksv5/
 4. **Transaction**: System records transaction with merchant name and cashback
 5. **Display**: Frontend shows transaction history with detailed rewards info
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Port Already in Use
 ```bash
@@ -245,16 +245,18 @@ python3 seed_data.py  # Recreate with fresh data
 
 ## Credits
 
-Built for **DubHacks 2025** - Based on the SmartCard PRD
+Built for DubHacks 2025 - Based on the SmartCard PRD
 
 **Team Members:**
-- George Evans
-- Calista Vidianto
-- Patrick Widjaya
+- Project Manager    : George Evans Daenuwy (UW BS ECE '26)
+- Software Engineer  : Calista Annelise Vidianto (UW BS CS '28)
+- Software Engineer  : Patrick Roland Wijaya (UW BS CS '27)
+- Data Analyst       : Kezia Maranatha Joesoef (UW BA Accounting/IS '27)
+- UI/UX Designer     : Angeline Nusalim (UW BS CS '27)
 
 **Special Thanks:**
 - DubHacks organizers and mentors
 
 ---
 
-Made with ❤️ at DubHacks 2025
+Started by Wallzy team in DubHacks 2025
